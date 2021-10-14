@@ -68,8 +68,8 @@ sensor.o: ../sensor.c \
  C\:\Users\jb\Documents\repos\UV_tech\embedded\autogen/sl_i2cspm_instances.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\driver\i2cspm\inc\sl_i2cspm.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_i2c.h \
- C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_uv_sensors_bus_config.h \
- ../sensor.h
+ ../sensor.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\device\siliconlabs\efr32bg22\include\efr32bg22_i2c.h
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\common\toolchain\inc\sl_gcc_preinclude.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\udelay\inc\sl_udelay.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_gpio.h:
@@ -139,5 +139,5 @@ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform
 C\:\Users\jb\Documents\repos\UV_tech\embedded\autogen/sl_i2cspm_instances.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\driver\i2cspm\inc\sl_i2cspm.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_i2c.h:
-C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_uv_sensors_bus_config.h:
 ../sensor.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\device\siliconlabs\efr32bg22\include\efr32bg22_i2c.h:

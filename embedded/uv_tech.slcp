@@ -31,7 +31,7 @@ component:
 - {id: bluetooth_feature_system}
 - {id: gatt_configuration}
 - {id: bluetooth_feature_scanner}
-- instance: [uv_sensors_bus]
+- instance: [s0, s1, s2, s3, s4, s5, s6, s7]
   id: i2cspm
 - {id: bluetooth_stack}
 - {id: component_catalog}

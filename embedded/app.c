@@ -27,10 +27,15 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  ******************************************************************************/
+#include <stdio.h>
 #include "em_common.h"
 #include "app_assert.h"
 #include "sl_bluetooth.h"
 #include "gatt_db.h"
+#include "sl_i2cspm.h"
+#include "sl_i2cspm_instances.h"
+#include "sl_udelay.h"
+#include "sensor.h"
 #include "app.h"
 
 // The advertising set handle allocated from Bluetooth stack.
@@ -45,6 +50,27 @@ SL_WEAK void app_init(void)
   // Put your additional application init code here!                         //
   // This is called once during start-up.                                    //
   /////////////////////////////////////////////////////////////////////////////
+  unsigned int i = 0;
+  int status;
+
+  /* Attempting to put all the sensors in an array, but it always yield an
+   * "initializer element is not constant" error for some reason.
+   */
+  while (i < 8)
+    {
+
+      if ((status = sensor_init(sl_i2cspm_s0)) < 0)
+        {
+          printf("Transfer error: %d\n", status);
+        }
+      if ((status = setmode(sl_i2cspm_s0, mode)) < 0)
+        {
+          printf("Transfer error: %d\n", status);
+        }
+      ++i;
+    }
+
+
 }
 
 /**************************************************************************//**
@@ -57,6 +83,25 @@ SL_WEAK void app_process_action(void)
   // This is called infinitely.                                              //
   // Do not call blocking functions from here!                               //
   /////////////////////////////////////////////////////////////////////////////
+
+  int status;
+  unsigned int i = 0;
+  unsigned double tmp;
+  uv = 0;
+
+  while (i < 8)
+    {
+      if ((tmp = poll(sl_i2cspm_s0)) == -1)
+        {
+          printf("Transfer error in poll.\n");
+          return;
+        }
+      uv += tmp/(i+1);
+      ++i;
+    }
+
+  sl_udelay_wait(RATE);
+
 }
 
 /**************************************************************************//**

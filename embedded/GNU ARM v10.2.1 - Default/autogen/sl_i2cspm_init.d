@@ -68,7 +68,14 @@ autogen/sl_i2cspm_init.o: ../autogen/sl_i2cspm_init.c \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_cmu.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_cmu_compat.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_gpio.h \
- C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_uv_sensors_bus_config.h
+ C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s0_config.h \
+ C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s1_config.h \
+ C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s2_config.h \
+ C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s3_config.h \
+ C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s4_config.h \
+ C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s5_config.h \
+ C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s6_config.h \
+ C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s7_config.h
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\common\toolchain\inc\sl_gcc_preinclude.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\driver\i2cspm\inc\sl_i2cspm.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_gpio.h:
@@ -138,4 +145,11 @@ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_cmu.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_cmu_compat.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_gpio.h:
-C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_uv_sensors_bus_config.h:
+C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s0_config.h:
+C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s1_config.h:
+C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s2_config.h:
+C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s3_config.h:
+C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s4_config.h:
+C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s5_config.h:
+C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s6_config.h:
+C\:\Users\jb\Documents\repos\UV_tech\embedded\config/sl_i2cspm_s7_config.h:

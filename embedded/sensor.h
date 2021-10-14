@@ -12,6 +12,10 @@
 #ifndef SENSOR_H_
 #define SENSOR_H_
 
+#include "sl_i2cspm.h"
+#include "gpiointerrupt.h"
+#include "efr32bg22_i2c.h"
+
 #define INT gpioPortA
 
 /* Clock limits */
@@ -110,15 +114,15 @@ typedef enum { FORCE, AUTO } Mode_t;
 typedef volatile uint8_t vu8;
 
 /* Initialization*/
-int sensor_init(void);
+int sensor_init(sl_i2cspm_t*);
 
-int setmode(Mode_t);
+int setmode(sl_i2cspm_t*, Mode_t);
 
 /* Command */
-uint8_t send_command(Command_t*);
+uint8_t send_command(sl_i2cspm_t*, Command_t*);
 
 /* Polling operation */
-double poll(void);
+double poll(sl_i2cspm_t*);
 
 /* Interrupt driven operation */
 void intread(uint8_t);
