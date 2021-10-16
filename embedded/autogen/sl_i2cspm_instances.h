@@ -29,20 +29,12 @@ extern "C" {
 #define SL_I2CSPM_S1_PRESENT
 #define SL_I2CSPM_S2_PRESENT
 #define SL_I2CSPM_S3_PRESENT
-#define SL_I2CSPM_S4_PRESENT
-#define SL_I2CSPM_S5_PRESENT
-#define SL_I2CSPM_S6_PRESENT
-#define SL_I2CSPM_S7_PRESENT
 
 
 extern sl_i2cspm_t *sl_i2cspm_s0;
 extern sl_i2cspm_t *sl_i2cspm_s1;
 extern sl_i2cspm_t *sl_i2cspm_s2;
 extern sl_i2cspm_t *sl_i2cspm_s3;
-extern sl_i2cspm_t *sl_i2cspm_s4;
-extern sl_i2cspm_t *sl_i2cspm_s5;
-extern sl_i2cspm_t *sl_i2cspm_s6;
-extern sl_i2cspm_t *sl_i2cspm_s7;
 
 void sl_i2cspm_init_instances(void);
 

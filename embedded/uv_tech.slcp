@@ -30,9 +30,9 @@ component:
 - {id: mpu}
 - {id: bluetooth_feature_system}
 - {id: gatt_configuration}
-- {id: bluetooth_feature_scanner}
-- instance: [s0, s1, s2, s3, s4, s5, s6, s7]
+- instance: [s0, s1, s2, s3]
   id: i2cspm
+- {id: bluetooth_feature_scanner}
 - {id: bluetooth_stack}
 - {id: component_catalog}
 - {id: ota_dfu}

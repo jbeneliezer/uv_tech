@@ -31,37 +31,21 @@
 #ifndef APP_H
 #define APP_H
 
+#include "si1132.h"
 #include "sl_i2cspm_instances.h"
-#include "sensor.h"
 
-Mode_t mode = AUTO;
-
-unsigned double uv;
-
-/*
- * I really don't know why this doesn't work
- *
- * sl_i2cspm_t* devices[8] =
- *  {
- *    sl_i2cspm_s0,
- *    sl_i2cspm_s1,
- *    sl_i2cspm_s2,
- *    sl_i2cspm_s3,
- *    sl_i2cspm_s4,
- *    sl_i2cspm_s5,
- *    sl_i2cspm_s6,
- *    sl_i2cspm_s7
- *   }
- */
+#define RATE 1000000UL			// poll rate
 
 /**************************************************************************//**
  * Application Init.
  *****************************************************************************/
-void app_init(void);
+void
+app_init(void);
 
 /**************************************************************************//**
  * Application Process Action.
  *****************************************************************************/
-void app_process_action(void);
+void
+app_process_action(void);
 
 #endif // APP_H
