@@ -31,10 +31,17 @@
 #ifndef APP_H
 #define APP_H
 
-#include "si1132.h"
-#include "sl_i2cspm_instances.h"
+#define RATE 1000000UL					// poll rate of i2c
+#define BLUETOOTH_TRANSFER_TIME 54		// time needed for bluetooth transfer (ms)
 
-#define RATE 1000000UL			// poll rate
+#define NUM_DEVICES 4					// number of sensors
+#define OUTPUT_MODE gpioModePushPull	// set output mode for power pins
+
+/* Sensor power pin array */
+#define SENSOR_POWER_PORT gpioPortA
+#define SENSOR_POWER_BASE_PIN 3
+
+#define MODE ((Mode_t) FORCED)			// sensor mode
 
 /**************************************************************************//**
  * Application Init.

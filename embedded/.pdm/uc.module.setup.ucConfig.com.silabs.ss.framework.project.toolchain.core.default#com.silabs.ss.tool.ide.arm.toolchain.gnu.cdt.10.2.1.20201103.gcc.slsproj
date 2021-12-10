@@ -17,17 +17,14 @@
     <file name="sl_bluetooth_connection_config.h" generated="true" linked="false" uri="studio:/project/config/sl_bluetooth_connection_config.h"/>
     <file name="sl_bluetooth_advertiser_config.h" generated="true" linked="false" uri="studio:/project/config/sl_bluetooth_advertiser_config.h"/>
     <file name="sl_device_init_emu_config.h" generated="true" linked="false" uri="studio:/project/config/sl_device_init_emu_config.h"/>
-    <file name="sl_i2cspm_s0_config.h" generated="true" linked="false" uri="studio:/project/config/sl_i2cspm_s0_config.h"/>
-    <file name="sl_i2cspm_s1_config.h" generated="true" linked="false" uri="studio:/project/config/sl_i2cspm_s1_config.h"/>
-    <file name="sl_i2cspm_s2_config.h" generated="true" linked="false" uri="studio:/project/config/sl_i2cspm_s2_config.h"/>
-    <file name="sl_i2cspm_s3_config.h" generated="true" linked="false" uri="studio:/project/config/sl_i2cspm_s3_config.h"/>
+    <file name="sl_i2cspm_sensor_bus_config.h" generated="true" linked="false" uri="studio:/project/config/sl_i2cspm_sensor_bus_config.h"/>
     <file name="sl_device_init_hfxo_config.h" generated="true" linked="false" uri="studio:/project/config/sl_device_init_hfxo_config.h"/>
     <file name="sl_rail_util_pa_config.h" generated="true" linked="false" uri="studio:/project/config/sl_rail_util_pa_config.h"/>
     <file name="mbedtls_config.h" generated="true" linked="false" uri="studio:/project/config/mbedtls_config.h"/>
     <file name="app_assert_config.h" generated="true" linked="false" uri="studio:/project/config/app_assert_config.h"/>
     <file name="emlib_core_debug_config.h" generated="true" linked="false" uri="studio:/project/config/emlib_core_debug_config.h"/>
-    <file name="psa_crypto_config.h" generated="true" linked="false" uri="studio:/project/config/psa_crypto_config.h"/>
     <file name="sl_sleeptimer_config.h" generated="true" linked="false" uri="studio:/project/config/sl_sleeptimer_config.h"/>
+    <file name="psa_crypto_config.h" generated="true" linked="false" uri="studio:/project/config/psa_crypto_config.h"/>
   </folder>
   <includePath uri="studio:/project/config/"/>
 </project>

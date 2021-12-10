@@ -1,176 +1,152 @@
 /*
- * sensor.c
+ * si1132.c
  *
  *  Created on: Oct 13, 2021
  *      Author: Judah Ben-Eliezer
  *
- *  All code related to the Si1132 sensors i2c interface.
+ *  All code related to the Si1132 i2c interface.
  *
  */
 
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include "sl_udelay.h"
 #include "em_gpio.h"
-#include "gpiointerrupt.h"
 #include "sl_i2cspm_instances.h"
 #include "si1132.h"
 
-/* Initializes sensor */
-int sensor_init(sl_i2cspm_t *sensor, uint8_t addr, Mode_t mode)
+bool si1132_init(GPIO_Port_TypeDef power_port, uint8_t power_pin,
+                 sl_i2cspm_t *i2c, uint8_t slave_id)
 {
-	/* enable interrupts */
-#if (mode == FORCE)
-	GPIOINT_Init();
-#endif
+	uint8_t ucoef[] = {0x7B, 0x6B, 0x01, 0x00};
 
-	uint8_t init_code = 0x17;
-	uint8_t chlist_init = EN_UV;
-	uint8_t ucoef[4] = {0x7B, 0x6B, 0x01, 0x00};
-	uint8_t vis_range = VIS_RANGE;
-	uint8_t ir_range = IR_RANGE;
+	GPIO_PinOutSet(power_port, power_pin);	// power on i2c
 
 	sl_udelay_wait(STARTUP_TIME);   // allow time for startup
 
 	/* write 0x17 to HW_KEY for proper operation */
-	if(write_byte(sensor, HW_KEY, &init_code) == 0xFF) return -1;
+	if (!single_write(i2c, DEFAULT_ADDR, HW_KEY, 0x17)) return false;
 
 	/* set device address */
-	if(write_ram(sensor, I2C_ADDR, &addr) == 0xFF) return -1;
-	if(write_ram(sensor, BUSADDR, &addr) == 0xFF) return -1;
-
-	sensor->SADDR = addr;
+	if (!write_ram(i2c, DEFAULT_ADDR, I2C_ADDR, slave_id)) return false;
+	if (send_command(i2c, DEFAULT_ADDR, BUSADDR).valid != true) return false;
 
 	/* enable uv detection */
-	if(write_ram(sensor, CHLIST, &chlist_init) == 0xFF) return -1;
+	if (!write_ram(i2c, slave_id, CHLIST, EN_UV)) return false;
 
 	/* configure ucoef for direct sunlight */
-	if(write_byte(sensor, UCOEF0, &ucoef[0]) == 0xFF) return -1;
-	if(write_byte(sensor, UCOEF1, &ucoef[1]) == 0xFF) return -1;
-	if(write_byte(sensor, UCOEF2, &ucoef[2]) == 0xFF) return -1;
-	if(write_byte(sensor, UCOEF3, &ucoef[3]) == 0xFF) return -1;
+	if (!burst_write(i2c, slave_id, UCOEF0, ucoef, 4)) return false;
 
 	/* enable vis_range and ir_range */
-	if(write_byte(sensor, ALS_VIS_ADC_MISC, &vis_range) == 0xFF) return -1;
-	if(write_byte(sensor, ALS_IR_ADC_MISC, &ir_range) == 0xFF) return -1;
+	if (!single_write(i2c, slave_id, ALS_VIS_ADC_MISC, VIS_RANGE)) return false;
+	if (!single_write(i2c, slave_id, ALS_IR_ADC_MISC, IR_RANGE)) return false;
 
-	/* set mode */
-	return (setmode(sensor, mode));
+	return true;
 }
 
-/* Configuration for forced/ auto modes */
-int setmode(sl_i2cspm_t *sensor, Mode_t m)
+I2C_TransferReturn_TypeDef single_write(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t addr,
+                  uint8_t data)
 {
-//	uint16_t rate = (m == AUTO) ? RATE / 31.25 : 0;
-//	uint8_t meas[2];
-//	memcpy (meas, &rate, 2); // calculate values for meas_h and meas_l: polling rate
-//
-//	if (write_byte(sensor, MEAS_RATE1, &meas[0]) == 0xFF) return -1;
-//	if (write_byte(sensor, MEAS_RATE0, &meas[1]) == 0xFF) return -1;
+	uint8_t tranfer_data[] = {addr, data};
+	I2C_TransferSeq_TypeDef seq = {slave_id, I2C_FLAG_WRITE,
+	        { {tranfer_data, 2}}};
 
-	uint8_t c = (m == AUTO) ? ALS_AUTO : ALS_FORCE;
-	send_command(sensor, c);
+	return I2CSPM_Transfer(i2c, &seq);
 
-	/* set up interrupts */
-//#if (m == FORCE)
-//	uint8_t int_cfg = INT_OE, als_ie = ALS_IE;
-//	/* Si1132 Interrupt Configuration */
-//	if (write_byte(sensor, INT_CFG, &int_cfg) == 0xFF) return -1;
-//	if (write_byte(sensor, IRQ_ENABLE, &als_ie) == 0xFF) return -1;
-//
-//	/* Configure INT pin of microcontroller */
-//	GPIOINT_CallbackRegister (INT, irq_read);
-//	GPIO_IntEnable (1 << 2);
-//#endif
-	return 0;
 }
 
-/* returns 1 byte from i2c register */
-uint8_t read_byte(sl_i2cspm_t *sensor, uint8_t addr)
+I2C_TransferReturn_TypeDef burst_write(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t addr,
+                 uint8_t *data, unsigned int num_bytes)
 {
-	int status;
-	uint8_t ret;
-	I2C_TransferSeq_TypeDef t = {addr, I2C_FLAG_READ, { {&ret, 1}}};
+	uint8_t transfer_data[num_bytes + 1];
+	memcpy(transfer_data, &addr, 1);
+	memcpy(transfer_data + sizeof(addr), data, num_bytes);
+	I2C_TransferSeq_TypeDef seq = {slave_id, I2C_FLAG_WRITE, { {transfer_data,
+	        num_bytes + 1}}};
 
-	if((status = I2CSPM_Transfer(sensor, &t)) != i2cTransferDone)
+	return I2CSPM_Transfer(i2c, &seq);
+}
+
+I2C_TransferReturn_TypeDef single_read(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t addr, uint8_t buffer)
+{
+	I2C_TransferReturn_TypeDef status;
+	I2C_TransferSeq_TypeDef addr_seq = {slave_id, I2C_FLAG_WRITE, { {&addr, 1}}};
+	I2C_TransferSeq_TypeDef data_seq = {slave_id, I2C_FLAG_READ, { {&buffer, 1}}};
+
+	if ((status = I2CSPM_Transfer(i2c, &addr_seq)) != i2cTransferDone)
 	{
 		printf("Transfer error: %d\n", status);
-		return 0xFF;
+		return status;
 	}
 
-	return ret;
+	return I2CSPM_Transfer(i2c, &data_seq);
 }
 
-/* writes 1 byte to i2c register */
-uint8_t write_byte(sl_i2cspm_t *sensor, uint8_t addr, uint8_t *data)
+I2C_TransferReturn_TypeDef burst_read(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t addr, uint8_t* buffer,
+                    unsigned int num_bytes)
 {
-	int status;
-	I2C_TransferSeq_TypeDef t = {addr, I2C_FLAG_READ, { {data, 1}}};
+	I2C_TransferReturn_TypeDef status;
+	I2C_TransferSeq_TypeDef addr_seq = {slave_id, I2C_FLAG_WRITE, { {&addr, 1}}};
+	I2C_TransferSeq_TypeDef data_seq = {slave_id, I2C_FLAG_READ, { {buffer,
+	        num_bytes}}};
 
-	if((status = I2CSPM_Transfer(sensor, &t)) != i2cTransferDone)
-	{
-		printf("Transfer error: %d\n", status);
-		return 0xFF;
-	}
+	if (Transfer(i2c, &addr_seq) != i2cTransferDone) return status;
 
-	return 0;
+	return I2CSPM_Transfer(i2c, &data_seq);
 }
 
-/* Reads 1 byte from ram */
-uint8_t read_ram(sl_i2cspm_t *sensor, uint8_t addr)
+bool read_ram(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t addr, uint8_t buffer)
 {
 	uint8_t ram_addr = (addr & 0x1F) | PARAM_QUERY;
-	if((send_command(sensor, ram_addr) & 0x80) != 0) return 0xFF;
-	return read_byte(sensor, PARAM_RD);
+	if ((send_command(i2c, slave_id, ram_addr) & 0xF0).valid != true) return false;
+	return (single_read(i2c, slave_id, PARAM_RD, buffer) == i2cTransferDone);
 }
 
-/* Writes 1 byte to ram */
-uint8_t write_ram(sl_i2cspm_t *sensor, uint8_t addr, uint8_t *data)
+bool write_ram(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t addr, uint8_t data)
 {
+	I2C_TransferSeq_TypeDef status;
 	/* Write data to PARAM_WR */
-	if(write_byte(sensor, PARAM_WR, data) == 0xFF) return 0xFF;
+	if ((single_write(i2c, slave_id, PARAM_WR, data)) != i2cTransferDone) return false;
 
 	uint8_t ram_addr = (addr & 0x1F) | PARAM_SET;
 
 	/* Write PARAM_WR to ram */
-	if((send_command(sensor, ram_addr) & 0x80) != 0) return 0xFF;
-	return read_byte(sensor, PARAM_RD);
-
+	if ((send_command(i2c, slave_id, ram_addr) & 0xF0).valid != true) return false;
+	return true;
 }
 
-/* protocol for sending commands to sensor */
-uint8_t send_command(sl_i2cspm_t *sensor, uint8_t command)
+Response_t send_command(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t command)
 {
-	uint8_t zero = 0x00, response, i = 100;
+	uint8_t  i = 100;
+	Response_t response = {false, I2C_TRANSFER_ERROR};
 
 	/* clear response register */
-	if(write_byte(sensor, COMMAND, NOP) == 0xFF) return 0xFF;
-	response = read_byte(sensor, RESPONSE);
-
-	if(response != 0x00) return response;
+	if (single_write(i2c, slave_id, COMMAND, NOP) != i2cTransferDone) return response;
+	if (single_read(i2c, slave_id, RESPONSE, response.e) != i2cTransferDone) return response;
 
 	/* send command to command register until response is detected */
-	while(response == 0x00 && i-- > 0)
+	while (response.e == NOERROR && i-- > 0)
 	{
-		if(write_byte(sensor, COMMAND, &command) == 0xFF) return 0xFF;
-		response = read_byte(sensor, RESPONSE);
-		if(response == 0xFF) return response;
+		if (single_write(i2c, slave_id, COMMAND, command) != i2cTransferDone) return response;
+		if (single_read(i2c, slave_id, RESPONSE, response.e) != i2cTranferDone) return response;
 	}
 
-	return response;
+	return {valid, response.e};
 }
 
-/* Reads word from UVINDEX1|UVINDEX0 */
-uint16_t read_word_aux(sl_i2cspm_t *sensor)
+uint16_t read_word_aux(sl_i2cspm_t *i2c, uint8_t slave_id, uint16_t buffer)
 {
-	uint16_t ret;
+	uint8_t data[2];
 
-	/* read high byte */
-	if((ret = read_byte(sensor, UVINDEX1)) == 0xFF) return 0xFFFF;
-	ret <<= 8;
+	/* send conversion command to i2c */
+	if ((send_command(i2c, slave_id, ALS_FORCE) & 0xF0) != 0) return 0xFFFF;
 
-	/* read low byte */
-	if((ret |= read_byte(sensor, UVINDEX0)) == 0xFF) return 0xFFFF;
+	/* allow time for conversion */
+	sl_udelay_wait(CONVERSION_TIME);
 
-	return ret;
+	/* read word into buffer */
+	if (!burst_read(i2c, slave_id, UVINDEX0, data, 2)) return 0xFFFF;
+
+	return data[0] | (data[1] << 8);
 }

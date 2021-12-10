@@ -28,21 +28,23 @@
  *
  ******************************************************************************/
 
-#define MODE ((Mode_t) AUTO)	// sensor mode
-
-#include <si1132.h>
 #include <stdio.h>
-#include "em_common.h"
+#include <stdbool.h>
 #include "app_assert.h"
 #include "sl_bluetooth.h"
 #include "gatt_db.h"
-#include "sl_i2cspm.h"
 #include "sl_i2cspm_instances.h"
 #include "sl_udelay.h"
+#include "si1132.h"
 #include "app.h"
 
 // The advertising set handle allocated from Bluetooth stack.
 static uint8_t advertising_set_handle = 0xff;
+
+uint16_t data[NUM_DEVICES];
+
+
+uint8_t sensors[] = {0x61, 0x62, 0x63, 0x64};
 
 /**************************************************************************//**
  * Application Init.
@@ -54,16 +56,25 @@ SL_WEAK void app_init(void)
 	// This is called once during start-up.                                    //
 	/////////////////////////////////////////////////////////////////////////////
 
-	sl_i2cspm_t *devices[] = {sl_i2cspm_s0, sl_i2cspm_s1, sl_i2cspm_s2,
-	        sl_i2cspm_s3};
 	uint8_t i = 0;
 
-	while(i < 4)
+
+	/* Configure sensor power pins as OUTPUT_MODE */
+	for (; i < NUM_DEVICES; ++i)
 	{
-		if(sensor_init(devices[i], i, MODE) < 0) printf(
-		        "Initialization error\n");
-		++i;
+		GPIO_PinModeSet(SENSOR_POWER_PORT, SENSOR_POWER_BASE_PIN + i,
+		                OUTPUT_MODE, 0);
 	}
+
+	/* Initialize sensors */
+	for (i = 0; i < NUM_DEVICES; ++i)
+	{
+		if (si1132_init(SENSOR_POWER_PORT, SENSOR_POWER_BASE_PIN + i,
+		                sl_i2cspm_sensor_bus, sensors[i]) == false) printf(
+		        "Initialization error\n");
+	}
+
+	// GPIO_DbgSWOEnable(true);
 
 }
 
@@ -78,22 +89,16 @@ SL_WEAK void app_process_action(void)
 	// Do not call blocking functions from here!                               //
 	/////////////////////////////////////////////////////////////////////////////
 
-	sl_i2cspm_t *devices[] = {sl_i2cspm_s0, sl_i2cspm_s1, sl_i2cspm_s2,
-	        sl_i2cspm_s3};
-	uint16_t data[4];
-	unsigned int i = 0;
-	while(i < 4)
+	uint8_t i = 0;
+
+	for (; i < NUM_DEVICES; ++i)
 	{
-		if((data[i] = read_word_aux(devices[i])) == 0xFFFF)
+		if ((data[i] = read_word_aux(sl_i2cspm_sensor_bus, sensors[i])) == 0xFFFF)
 		{
 			printf("Transfer error in read.\n");
 			return;
 		}
-		++i;
 	}
-
-	sl_udelay_wait(RATE);
-
 }
 
 /**************************************************************************//**
@@ -109,7 +114,7 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 	uint8_t address_type;
 	uint8_t system_id[8];
 
-	switch(SL_BT_MSG_ID(evt->header))
+	switch (SL_BT_MSG_ID(evt->header))
 	{
 		// -------------------------------
 		// This event indicates the device has started and the radio is ready.

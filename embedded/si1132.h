@@ -1,5 +1,5 @@
 /*
- * sensor.h
+ * si1132.h
  *
  *  Created on: Oct 13, 2021
  *      Author: Judah Ben-Eliezer
@@ -12,26 +12,21 @@
 #ifndef SI1132_H_
 #define SI1132_H_
 
-#include "sl_i2cspm.h"
-#include "gpiointerrupt.h"
-#include "efr32bg22_i2c.h"
-
 /* Modes */
 typedef enum
 {
-	FORCE, AUTO
+	FORCED, AUTO
 } Mode_t;
 
-/* Int port and pin */
-#define INT gpioPortA
-#define INT_PIN 2
-
 /* Clock limits */
-#define MAX_FREQUENCY 34000U // max clock frequency
-#define MIN_FREQUENCY 95U    // min clock frequency
+#define MAX_FREQUENCY 34000U 	// max clock frequency
+#define MIN_FREQUENCY 95U    	// min clock frequency
 
 /* More timing macros */
-#define STARTUP_TIME 25000U  // startup time in ms
+#define STARTUP_TIME 25000U  	// startup time (ms)
+#define CONVERSION_TIME 300U	// time needed for data generation (us)
+
+#define DEFAULT_ADDR 0x60		// default slave if
 
 /* Bit masks for CHLIST */
 #define EN_UV (1<<7)
@@ -39,6 +34,7 @@ typedef enum
 #define EN_ALS_IR (1<<5)
 #define EN_ALS_VIS (1<<4)
 
+/* ADC masks */
 #define VIS_RANGE (1<<5)
 #define IR_RANGE (1<<5)
 
@@ -103,37 +99,175 @@ typedef enum
 #define	ALS_AUTO 0b00001110
 
 /* Response Errors */
-#define NOERROR 0x0
-#define INVALID_SETTINGS 0x80
-#define ALS_VIS_ADC_OVERFLOW 0x8C
-#define ALS_IR_ADC_OVERFLOW 0x8D
-#define AUX_ADC_OVERFLOW = 0x8E
+typedef enum
+{
+	INVALID_SETTINGS = 0x0,
+	ALS_VIS_ADC_OVERFLOW = 0xC,
+	ALS_IR_ADC_OVERFLOW = 0xD,
+	AUX_ADC_OVERFLOW = 0xE,
+	I2C_TRANSFER_ERROR = 0xF
+} error_code;
 
-/* Initialization*/
-int sensor_init(sl_i2cspm_t*, uint8_t, Mode_t);
+typedef struct
+{
+	bool valid;
+	error_code e;
+} Response_t;
 
-/* Set either auto or forced for interrupt driven or polled operation*/
-int setmode(sl_i2cspm_t*, Mode_t);
+/***************************************************************************//**
+ * @brief
+ *   Initializes si1132 slave for UV detection.
+ *
+ * @param[in] power_port
+ * 	 GPIO output port for slave VDD.
+ *
+ * @param[in] power_pin
+ *   GPIO output pin for slave VDD.
+ *
+ * @param[in] i2c
+ *   Pointer to I2C peripheral register block.
+ *
+ * @param[in] slave_id.
+ *   Address to assign to slave.
+ ******************************************************************************/
+bool si1132_init(GPIO_Port_TypeDef, uint8_t, sl_i2cspm_t*, uint8_t);
 
-/* Command */
-uint8_t send_command(sl_i2cspm_t*, uint8_t);
+/***************************************************************************//**
+ * @brief
+ *   Writes 1 byte to a register of si1132 slave.
+ *
+ * @param[in] i2c
+ *   Pointer to I2C peripheral register block.
+ *
+ * @param[in] slave_id.
+ *   Address of slave.
+ *
+ * @param[in] addr
+ *   Internal register address to write to.
+ *
+ * @param[in] data
+ *   Byte to write.
+ ******************************************************************************/
+I2C_TransferReturn_TypeDef single_write(sl_i2cspm_t*, uint8_t, uint8_t, uint8_t);
 
-/* Read byte from  register */
-uint8_t read_byte(sl_i2cspm_t*, uint8_t);
+/***************************************************************************//**
+ * @brief
+ *   Writes byte array to si1132 slave.
+ *
+ * @param[in] i2c
+ *   Pointer to I2C peripheral register block.
+ *
+ * @param[in] slave_id.
+ *   Address of slave.
+ *
+ * @param[in] addr
+ *   Internal register address to begin write.
+ *
+ * @param[in] data
+ *   Pointer to array of data to write.
+ *
+ * @param[in] num_bytes
+ *   Number of bytes to write.
+ ******************************************************************************/
+I2C_TransferReturn_TypeDef burst_write(sl_i2cspm_t*, uint8_t, uint8_t, uint8_t*, unsigned int);
 
-/* Write byte to register */
-uint8_t write_byte(sl_i2cspm_t*, uint8_t, uint8_t*);
+/***************************************************************************//**
+ * @brief
+ *   Reads 1 byte from a register of si1132 slave.
+ *
+ * @param[in] i2c
+ *   Pointer to I2C peripheral register block.
+ *
+ * @param[in] slave_id.
+ *   Address of slave.
+ *
+ * @param[in] addr
+ *   Internal register address to read from.
+ *
+ * @param[in] buffer
+ *   Buffer to read byte into.
+ ******************************************************************************/
+I2C_TransferReturn_TypeDef single_read(sl_i2cspm_t*, uint8_t, uint8_t, uint8_t);
 
-/* Read byte from ram */
-uint8_t read_ram(sl_i2cspm_t*, uint8_t);
+/***************************************************************************//**
+ * @brief
+ *   Reads byte array from si1132 slave.
+ *
+ * @param[in] i2c
+ *   Pointer to I2C peripheral register block.
+ *
+ * @param[in] slave_id.
+ *   Address of slave.
+ *
+ * @param[in] addr
+ *   Internal register address to begin read.
+ *
+ * @param[in] buffer
+ *   Buffer to store bytes in.
+ *
+ * @param[in] num_bytes
+ *   Number of bytes to read.
+ ******************************************************************************/
+I2C_TransferReturn_TypeDef burst_read(sl_i2cspm_t*, uint8_t, uint8_t, uint8_t *buffer, unsigned int);
 
-/* Write byte to ram */
-uint8_t write_ram(sl_i2cspm_t*, uint8_t, uint8_t*);
+/***************************************************************************//**
+ * @brief
+ *   Reads 1 byte from ram of si1132 slave.
+ *
+ * @param[in] i2c
+ *   Pointer to I2C peripheral register block.
+ *
+ * @param[in] slave_id.
+ *   Address of slave.
+ *
+ * @param[in] addr
+ *   Ram address to read from.
+ ******************************************************************************/
+bool read_ram(sl_i2cspm_t*, uint8_t, uint8_t, uint8_t);
 
-/* Read word from AUX_DATA1|AUX_DATA0 */
-uint16_t read_word_aux(sl_i2cspm_t*);
+/***************************************************************************//**
+ * @brief
+ *   Writes 1 byte to ram of si1132 slave.
+ *
+ * @param[in] i2c
+ *   Pointer to I2C peripheral register block.
+ *
+ * @param[in] slave_id.
+ *   Address of slave.
+ *
+ * @param[in] addr
+ *   Ram address to write to.
+ *
+ * @param[in] buffer
+ *   Buffer to read data into.
+ ******************************************************************************/
+bool write_ram(sl_i2cspm_t*, uint8_t, uint8_t, uint8_t);
 
-/* Interrupt driven operation */
-//void intread(uint8_t);
-//GPIOINT_IrqCallbackPtr_t irq_read = &intread;
+/***************************************************************************//**
+ * @brief
+ *   Sends command to si1132 slave.
+ *
+ * @param[in] i2c
+ *   Pointer to I2C peripheral register block.
+ *
+ * @param[in] slave_id.
+ *   Address of slave.
+ *
+ * @param[in] command
+ *   Command to send.
+ ******************************************************************************/
+Response_t send_command(sl_i2cspm_t*, uint8_t, uint8_t);
+
+/***************************************************************************//**
+ * @brief
+ *   Reads word from UVINDEX1|UVINDEX0.
+ *
+ * @param[in] i2c
+ *   Pointer to I2C peripheral register block.
+ *
+ * @param[in] slave_id.
+ *   Address of slave.
+ ******************************************************************************/
+uint16_t read_word_aux(sl_i2cspm_t*, uint8_t);
+
 #endif /* SI1132_H_ */

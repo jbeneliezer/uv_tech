@@ -26,6 +26,7 @@ sl_i2cspm_s5_config.h=-1719557323
 sl_i2cspm_s6_config.h=-1760947131
 sl_i2cspm_s7_config.h=-1836284267
 sl_i2cspm_s_config.h=1127441459
+sl_i2cspm_sensor_bus_config.h=1857893534
 sl_i2cspm_uv_sensors_bus_config.h=1852076388
 sl_memory_config.h=503032768
 sl_power_manager_config.h=-1475773310
