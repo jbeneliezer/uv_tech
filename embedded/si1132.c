@@ -92,25 +92,6 @@ I2C_TransferReturn_TypeDef burst_read(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_
 	return I2CSPM_Transfer(i2c, &data_seq);
 }
 
-bool read_ram(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t addr, uint8_t buffer)
-{
-	uint8_t ram_addr = (addr & 0x1F) | PARAM_QUERY;
-	if ((send_command(i2c, slave_id, ram_addr) & 0xF0).valid != true) return false;
-	return (single_read(i2c, slave_id, PARAM_RD, buffer) == i2cTransferDone);
-}
-
-bool write_ram(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t addr, uint8_t data)
-{
-	/* Write data to PARAM_WR */
-	if ((single_write(i2c, slave_id, PARAM_WR, data)) != i2cTransferDone) return false;
-
-	uint8_t ram_addr = (addr & 0x1F) | PARAM_SET;
-
-	/* Write PARAM_WR to ram */
-	if ((send_command(i2c, slave_id, ram_addr) & 0xF0) != NOERROR) return false;
-	else return true;
-}
-
 uint8_t send_command(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t command)
 {
 	uint8_t  i = 100, response = I2C_TRANSFER_ERROR;
@@ -129,6 +110,25 @@ uint8_t send_command(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t command)
 	return response;
 }
 
+bool write_ram(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t addr, uint8_t data)
+{
+	/* Write data to PARAM_WR */
+	if ((single_write(i2c, slave_id, PARAM_WR, data)) != i2cTransferDone) return false;
+
+	uint8_t ram_addr = (addr & 0x1F) | PARAM_SET;
+
+	/* Write PARAM_WR to ram */
+	if ((send_command(i2c, slave_id, ram_addr) & 0xF0) != NOERROR) return false;
+	return true;
+}
+
+bool read_ram(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t addr, uint8_t buffer)
+{
+	uint8_t ram_addr = (addr & 0x1F) | PARAM_QUERY;
+	if ((send_command(i2c, slave_id, ram_addr) & 0xF0) != NOERROR) return false;
+	return (single_read(i2c, slave_id, PARAM_RD, buffer) == i2cTransferDone);
+}
+
 uint8_t read_word_aux(sl_i2cspm_t *i2c, uint8_t slave_id, uint16_t buffer)
 {
 	uint8_t data[2], status;
@@ -144,5 +144,5 @@ uint8_t read_word_aux(sl_i2cspm_t *i2c, uint8_t slave_id, uint16_t buffer)
 
 	buffer = data[0] | (data[1] << 8);
 	
-	return 
+	return status;
 }
