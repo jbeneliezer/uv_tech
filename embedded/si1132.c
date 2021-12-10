@@ -74,11 +74,7 @@ I2C_TransferReturn_TypeDef single_read(sl_i2cspm_t *i2c, uint8_t slave_id, uint8
 	I2C_TransferSeq_TypeDef addr_seq = {slave_id, I2C_FLAG_WRITE, { {&addr, 1}}};
 	I2C_TransferSeq_TypeDef data_seq = {slave_id, I2C_FLAG_READ, { {&buffer, 1}}};
 
-	if ((status = I2CSPM_Transfer(i2c, &addr_seq)) != i2cTransferDone)
-	{
-		printf("Transfer error: %d\n", status);
-		return status;
-	}
+	if ((status = I2CSPM_Transfer(i2c, &addr_seq)) != i2cTransferDone) return status;
 
 	return I2CSPM_Transfer(i2c, &data_seq);
 }
@@ -91,7 +87,7 @@ I2C_TransferReturn_TypeDef burst_read(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_
 	I2C_TransferSeq_TypeDef data_seq = {slave_id, I2C_FLAG_READ, { {buffer,
 	        num_bytes}}};
 
-	if (Transfer(i2c, &addr_seq) != i2cTransferDone) return status;
+	if ((status = Transfer(i2c, &addr_seq)) != i2cTransferDone) return status;
 
 	return I2CSPM_Transfer(i2c, &data_seq);
 }
@@ -105,48 +101,48 @@ bool read_ram(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t addr, uint8_t buffer)
 
 bool write_ram(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t addr, uint8_t data)
 {
-	I2C_TransferSeq_TypeDef status;
 	/* Write data to PARAM_WR */
 	if ((single_write(i2c, slave_id, PARAM_WR, data)) != i2cTransferDone) return false;
 
 	uint8_t ram_addr = (addr & 0x1F) | PARAM_SET;
 
 	/* Write PARAM_WR to ram */
-	if ((send_command(i2c, slave_id, ram_addr) & 0xF0).valid != true) return false;
-	return true;
+	if ((send_command(i2c, slave_id, ram_addr) & 0xF0) != NOERROR) return false;
+	else return true;
 }
 
-Response_t send_command(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t command)
+uint8_t send_command(sl_i2cspm_t *i2c, uint8_t slave_id, uint8_t command)
 {
-	uint8_t  i = 100;
-	Response_t response = {false, I2C_TRANSFER_ERROR};
+	uint8_t  i = 100, response = I2C_TRANSFER_ERROR;
 
 	/* clear response register */
 	if (single_write(i2c, slave_id, COMMAND, NOP) != i2cTransferDone) return response;
-	if (single_read(i2c, slave_id, RESPONSE, response.e) != i2cTransferDone) return response;
+	if (single_read(i2c, slave_id, RESPONSE, response) != i2cTransferDone) return response;
 
 	/* send command to command register until response is detected */
-	while (response.e == NOERROR && i-- > 0)
+	while (response == NOERROR && i-- > 0)
 	{
 		if (single_write(i2c, slave_id, COMMAND, command) != i2cTransferDone) return response;
-		if (single_read(i2c, slave_id, RESPONSE, response.e) != i2cTranferDone) return response;
+		if (single_read(i2c, slave_id, RESPONSE, response) != i2cTranferDone) return response;
 	}
 
-	return {valid, response.e};
+	return response;
 }
 
-uint16_t read_word_aux(sl_i2cspm_t *i2c, uint8_t slave_id, uint16_t buffer)
+uint8_t read_word_aux(sl_i2cspm_t *i2c, uint8_t slave_id, uint16_t buffer)
 {
-	uint8_t data[2];
+	uint8_t data[2], status;
 
 	/* send conversion command to i2c */
-	if ((send_command(i2c, slave_id, ALS_FORCE) & 0xF0) != 0) return 0xFFFF;
+	if ((status = (send_command(i2c, slave_id, ALS_FORCE)) & 0xF0) != NOERROR) return status;
 
 	/* allow time for conversion */
 	sl_udelay_wait(CONVERSION_TIME);
 
 	/* read word into buffer */
-	if (!burst_read(i2c, slave_id, UVINDEX0, data, 2)) return 0xFFFF;
+	if (!burst_read(i2c, slave_id, UVINDEX0, data, 2)) return I2C_TRANSFER_ERROR;
 
-	return data[0] | (data[1] << 8);
+	buffer = data[0] | (data[1] << 8);
+	
+	return 
 }
