@@ -99,20 +99,12 @@ typedef enum
 #define	ALS_AUTO 0b00001110
 
 /* Response Errors */
-typedef enum
-{
-	INVALID_SETTINGS = 0x0,
-	ALS_VIS_ADC_OVERFLOW = 0xC,
-	ALS_IR_ADC_OVERFLOW = 0xD,
-	AUX_ADC_OVERFLOW = 0xE,
-	I2C_TRANSFER_ERROR = 0xF
-} error_code;
-
-typedef struct
-{
-	bool valid;
-	error_code e;
-} Response_t;
+#define	NOERROR 0x00
+#define	INVALID_SETTINGS 0x80
+#define	ALS_VIS_ADC_OVERFLOW 0x8C
+#define	ALS_IR_ADC_OVERFLOW 0x8D
+#define	AUX_ADC_OVERFLOW 0x8E
+#define	I2C_TRANSFER_ERROR 0x8F
 
 /***************************************************************************//**
  * @brief
@@ -212,7 +204,7 @@ I2C_TransferReturn_TypeDef burst_read(sl_i2cspm_t*, uint8_t, uint8_t, uint8_t *b
 
 /***************************************************************************//**
  * @brief
- *   Reads 1 byte from ram of si1132 slave.
+ *   Sends command to si1132 slave.
  *
  * @param[in] i2c
  *   Pointer to I2C peripheral register block.
@@ -220,10 +212,10 @@ I2C_TransferReturn_TypeDef burst_read(sl_i2cspm_t*, uint8_t, uint8_t, uint8_t *b
  * @param[in] slave_id.
  *   Address of slave.
  *
- * @param[in] addr
- *   Ram address to read from.
+ * @param[in] command
+ *   Command to send.
  ******************************************************************************/
-bool read_ram(sl_i2cspm_t*, uint8_t, uint8_t, uint8_t);
+uint8_t send_command(sl_i2cspm_t*, uint8_t, uint8_t);
 
 /***************************************************************************//**
  * @brief
@@ -238,14 +230,14 @@ bool read_ram(sl_i2cspm_t*, uint8_t, uint8_t, uint8_t);
  * @param[in] addr
  *   Ram address to write to.
  *
- * @param[in] buffer
- *   Buffer to read data into.
+ * @param[in] data
+ *   Byte to write.
  ******************************************************************************/
 bool write_ram(sl_i2cspm_t*, uint8_t, uint8_t, uint8_t);
 
 /***************************************************************************//**
  * @brief
- *   Sends command to si1132 slave.
+ *   Reads 1 byte from ram of si1132 slave.
  *
  * @param[in] i2c
  *   Pointer to I2C peripheral register block.
@@ -253,10 +245,13 @@ bool write_ram(sl_i2cspm_t*, uint8_t, uint8_t, uint8_t);
  * @param[in] slave_id.
  *   Address of slave.
  *
- * @param[in] command
- *   Command to send.
+ * @param[in] addr
+ *   Ram address to read from.
+ *
+ * @param[in] buffer
+ *   Buffer to read data into.
  ******************************************************************************/
-Response_t send_command(sl_i2cspm_t*, uint8_t, uint8_t);
+bool read_ram(sl_i2cspm_t*, uint8_t, uint8_t, uint8_t);
 
 /***************************************************************************//**
  * @brief
@@ -267,7 +262,10 @@ Response_t send_command(sl_i2cspm_t*, uint8_t, uint8_t);
  *
  * @param[in] slave_id.
  *   Address of slave.
+ *
+ * @param[in] buffer.
+ *   Buffer to read word into.
  ******************************************************************************/
-uint16_t read_word_aux(sl_i2cspm_t*, uint8_t);
+uint8_t read_word_aux(sl_i2cspm_t*, uint8_t, uint16_t);
 
 #endif /* SI1132_H_ */
