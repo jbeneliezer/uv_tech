@@ -1,0 +1,16 @@
+#CRC Codes for initially generated config files -- do not modify!
+emlib_core_debug_config.h=-551881347
+sl_device_init_dcdc_config.h=-870566101
+sl_device_init_emu_config.h=622680131
+sl_emlib_gpio_init_BATTERY_MONITOR_config.h=-619303156
+sl_emlib_gpio_init_BUTTON_config.h=-2052085352
+sl_emlib_gpio_init_I2C_VDD_0_config.h=-854123570
+sl_emlib_gpio_init_I2C_VDD_1_config.h=1155712952
+sl_emlib_gpio_init_I2C_VDD_2_config.h=-619653677
+sl_emlib_gpio_init_I2C_VDD_3_config.h=1390741925
+sl_emlib_gpio_init_I2C_VDD_config.h=1249175916
+sl_emlib_gpio_init_LED_config.h=93034072
+sl_emlib_gpio_init_gpio_pins_config.h=1930172807
+sl_emlib_gpio_init_pin0_config.h=1601723991
+sl_memory_config.h=687128566
+sl_sleeptimer_config.h=-1879962229
