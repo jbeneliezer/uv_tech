@@ -15,6 +15,7 @@
     <property object="PA06" propertyId="pin.name" value="I2C_VDD_3"/>
     <property object="PA06" propertyId="pin.reserve" value="Reserved"/>
     <property object="PB00" propertyId="pin.name" value="I2C_SDA"/>
+    <property object="PB00" propertyId="pin.reserve" value="Reserved"/>
     <property object="PB01" propertyId="pin.name" value="I2C_SCL"/>
     <property object="PC00" propertyId="ABModule.selectedRequirement" value="gpio%T%SL_EMLIB_GPIO_INIT_LED%T%sl_emlib_gpio_init_LED_config.h"/>
     <property object="PC00" propertyId="pin.name" value="USER_LED"/>

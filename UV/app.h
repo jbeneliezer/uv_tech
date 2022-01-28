@@ -34,7 +34,6 @@ extern uint16_t UV_data[MAX_SENSORS];
  * Initialize application.
  ******************************************************************************/
 void app_init(void);
-void i2c_init(void);
 
 /***************************************************************************//**
  * App ticking function.

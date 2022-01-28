@@ -16,8 +16,6 @@ void i2c_init(void) {
 
 	//Initialize I2C configuration
 	I2C_Init_TypeDef i2cInit = I2C_INIT_DEFAULT;		//base initial config from the default, enabled in master mode
-	//i2cInit.freq = I2C_FREQ_FAST_MAX;					//config for i2c fast mode (~400 kHz)
-	//i2cInit.clhr = i2cClockHLRAsymetric;				//config for 6:3 ratio for Nlow:Nhigh
 
 	//Both I2C pins configured for open-drain pull up operation
 	GPIO_PinModeSet(gpioPortB, 0, gpioModeWiredAndPullUpFilter, 1);		//PB0 = SDA

@@ -125,6 +125,8 @@ typedef enum
  ******************************************************************************/
 bool si1132_init(GPIO_Port_TypeDef power_port, uint8_t power_pin, I2C_TypeDef *i2c, uint8_t slave_addr);
 
+bool si1132_calibrate(I2C_TypeDef *i2c, uint8_t slave_addr);
+
 /***************************************************************************//**
  * @brief
  *   Sends command to si1132 slave.
@@ -221,4 +223,52 @@ uint8_t si1132_UV_start_measurement(I2C_TypeDef *i2c, uint8_t slave_addr);
  *   Buffer to read word into.
  ******************************************************************************/
 uint8_t si1132_UV_read_measurement(I2C_TypeDef *i2c, uint8_t slave_addr, uint16_t *buffer);
+
+/***************************************************************************//**
+ * CODE BELOW HAS BEEN PROVIDED BY SILICON LABS
+ * "si114x_function.c"
+ *
+ * Slightly modified for calibration of Si1132 chips only
+ ******************************************************************************/
+#define FLT_TO_FX20(x)       ((int32_t)((x*1048576)+.5))
+#define FX20_ONE             FLT_TO_FX20( 1.000000)
+#define FX20_BAD_VALUE       0xffffffff
+
+#define SIRPD_ADCHI_IRLED    (collect(buffer, 0x23, 0x22,  0))
+#define SIRPD_ADCLO_IRLED    (collect(buffer, 0x22, 0x25,  1))
+#define SIRPD_ADCLO_WHLED    (collect(buffer, 0x24, 0x26,  0))
+#define VISPD_ADCHI_WHLED    (collect(buffer, 0x26, 0x27,  1))
+#define VISPD_ADCLO_WHLED    (collect(buffer, 0x28, 0x29,  0))
+#define LIRPD_ADCHI_IRLED    (collect(buffer, 0x29, 0x2a,  1))
+#define LED_DRV65            (collect(buffer, 0x2b, 0x2c,  0))
+
+#define ALIGN_LEFT   1
+#define ALIGN_RIGHT -1
+
+struct operand_t
+{
+  uint32_t op1;
+  uint32_t op2;
+};
+struct cal_ref_t
+{
+	uint32_t sirpd_adchi_irled;
+	uint32_t sirpd_adclo_irled;
+	uint32_t sirpd_adclo_whled;
+	uint32_t vispd_adchi_whled;
+	uint32_t vispd_adclo_whled;
+	uint32_t lirpd_adchi_irled;
+	uint32_t ledi_65ma;
+	uint8_t  ucoef[4];
+};
+
+uint32_t decode(uint32_t input);
+uint32_t collect(uint8_t* buffer, uint8_t msb_addr, uint8_t lsb_addr, uint8_t alignment);
+void shift_left(uint32_t* value_p, int8_t shift);
+int8_t align( uint32_t* value_p, int8_t direction );
+void fx20_round(uint32_t *value_p);
+uint32_t fx20_divide( struct operand_t* operand_p );
+uint32_t fx20_multiply( struct operand_t* operand_p );
+uint32_t vispd_correction(uint8_t *buffer);
+uint32_t irpd_correction(uint8_t *buffer);
 #endif /* SI1132_H_ */

@@ -10,6 +10,7 @@ sl_emlib_gpio_init_I2C_VDD_2_config.h=-619653677
 sl_emlib_gpio_init_I2C_VDD_3_config.h=1390741925
 sl_emlib_gpio_init_I2C_VDD_config.h=1249175916
 sl_emlib_gpio_init_LED_config.h=93034072
+sl_emlib_gpio_init_SDA_config.h=1255043519
 sl_emlib_gpio_init_gpio_pins_config.h=1930172807
 sl_emlib_gpio_init_pin0_config.h=1601723991
 sl_memory_config.h=687128566
