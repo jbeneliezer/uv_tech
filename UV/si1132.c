@@ -10,9 +10,6 @@
  *
  */
 
-//#include <stdio.h>
-//#include <string.h>
-//#include <stdbool.h>
 #include "sl_udelay.h"
 #include "em_gpio.h"
 #include "em_i2c.h"
@@ -45,6 +42,10 @@ bool si1132_init(GPIO_Port_TypeDef power_port, uint8_t power_pin, I2C_TypeDef *i
 	if (!si1132_write_ram(i2c, DEFAULT_ADDR, I2C_ADDR, slave_addr)) return false;
 	if ((si1132_send_command_BUSADDR(i2c, DEFAULT_ADDR, slave_addr) & 0xF0) != NOERROR ) return false;
 
+	/* disable interrupts */
+	if (i2c_write_single(i2c, slave_addr, INT_CFG, 0x00) != i2cTransferDone) return false;
+	if (i2c_write_single(i2c, slave_addr, IRQ_ENABLE, 0x00) != i2cTransferDone) return false;
+
 	/* configure for forced measurement mode */
 	if (i2c_write_single(i2c, slave_addr, MEAS_RATE0, 0x00) != i2cTransferDone) return false;
 	if (i2c_write_single(i2c, slave_addr, MEAS_RATE1, 0x00) != i2cTransferDone) return false;
@@ -56,7 +57,7 @@ bool si1132_init(GPIO_Port_TypeDef power_port, uint8_t power_pin, I2C_TypeDef *i
 	/* calibrate the sensor */
 	if (!si1132_calibrate(i2c, slave_addr)) return false;
 
-	/* enable UV detection */
+	/* enable UV detection only */
 	if (!si1132_write_ram(i2c, slave_addr, CHLIST, EN_UV)) return false;
 
 	return true;
