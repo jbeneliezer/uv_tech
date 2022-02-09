@@ -28,7 +28,6 @@ gecko_sdk_3.2.3/platform/driver/debug/src \
 gecko_sdk_3.2.3/platform/emdrv/nvm3/src \
 gecko_sdk_3.2.3/platform/emlib/src \
 gecko_sdk_3.2.3/platform/radio/rail_lib/plugin/pa-conversions \
-gecko_sdk_3.2.3/platform/radio/rail_lib/plugin/rail_util_pti \
 gecko_sdk_3.2.3/platform/service/device_init/src \
 gecko_sdk_3.2.3/platform/service/hfxo_manager/src \
 gecko_sdk_3.2.3/platform/service/mpu/src \

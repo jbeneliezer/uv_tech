@@ -39,8 +39,6 @@ typedef struct Sensor{
 	uint8_t power_pin;
 	uint8_t addr;
 }Sensor;
-extern Sensor sensors[MAX_SENSORS];
-extern uint16_t UV_data[MAX_SENSORS];
 
 /**************************************************************************//**
  * Application Init.

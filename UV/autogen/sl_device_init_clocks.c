@@ -33,12 +33,12 @@
 
 sl_status_t sl_device_init_clocks(void)
 {
-  CMU_ClockSelectSet(cmuClock_SYSCLK, cmuSelect_HFRCODPLL);
+  CMU_ClockSelectSet(cmuClock_SYSCLK, cmuSelect_HFXO);
 #if defined(_CMU_EM01GRPACLKCTRL_MASK)
-  CMU_ClockSelectSet(cmuClock_EM01GRPACLK, cmuSelect_HFRCODPLL);
+  CMU_ClockSelectSet(cmuClock_EM01GRPACLK, cmuSelect_HFXO);
 #endif
 #if defined(_CMU_EM01GRPBCLKCTRL_MASK)
-  CMU_ClockSelectSet(cmuClock_EM01GRPBCLK, cmuSelect_HFRCODPLL);
+  CMU_ClockSelectSet(cmuClock_EM01GRPBCLK, cmuSelect_HFXO);
 #endif
   CMU_ClockSelectSet(cmuClock_EM23GRPACLK, cmuSelect_LFRCO);
   CMU_ClockSelectSet(cmuClock_EM4GRPACLK, cmuSelect_LFRCO);

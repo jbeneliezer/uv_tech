@@ -69,7 +69,6 @@ autogen/sl_event_handler.o: ../autogen/sl_event_handler.c \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\device_init\inc\sl_device_init_nvic.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\common\inc\sl_status.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\device_init\inc\sl_device_init_dcdc.h \
- c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\device_init\inc\sl_device_init_hfrco.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\hfxo_manager\inc\sl_hfxo_manager.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\device_init\inc\sl_device_init_hfxo.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\device_init\inc\sl_device_init_lfrco.h \
@@ -84,7 +83,6 @@ autogen/sl_event_handler.o: ../autogen/sl_event_handler.c \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\plugin\pa-conversions\pa_curves_efr32.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\plugin\pa-conversions\efr32xg22/sl_rail_util_pa_curves.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\plugin\pa-conversions\pa_curve_types_efr32.h \
- c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\plugin\rail_util_pti\sl_rail_util_pti.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\sleeptimer\inc\sl_sleeptimer.h \
  C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/sl_sleeptimer_config.h \
  ../autogen/sl_bluetooth.h \
@@ -183,7 +181,6 @@ C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/emlib_core_debug_config.
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\device_init\inc\sl_device_init_nvic.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\common\inc\sl_status.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\device_init\inc\sl_device_init_dcdc.h:
-c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\device_init\inc\sl_device_init_hfrco.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\hfxo_manager\inc\sl_hfxo_manager.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\device_init\inc\sl_device_init_hfxo.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\device_init\inc\sl_device_init_lfrco.h:
@@ -198,7 +195,6 @@ C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/sl_rail_util_pa_config.h
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\plugin\pa-conversions\pa_curves_efr32.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\plugin\pa-conversions\efr32xg22/sl_rail_util_pa_curves.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\plugin\pa-conversions\pa_curve_types_efr32.h:
-c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\plugin\rail_util_pti\sl_rail_util_pti.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\sleeptimer\inc\sl_sleeptimer.h:
 C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/sl_sleeptimer_config.h:
 ../autogen/sl_bluetooth.h:

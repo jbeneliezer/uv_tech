@@ -474,11 +474,6 @@
 			<locationURI>STUDIO_SDK_LOC/platform/service/device_init/inc/sl_device_init_emu.h</locationURI>
 		</link>
 		<link>
-			<name>gecko_sdk_3.2.3/platform/service/device_init/inc/sl_device_init_hfrco.h</name>
-			<type>1</type>
-			<locationURI>STUDIO_SDK_LOC/platform/service/device_init/inc/sl_device_init_hfrco.h</locationURI>
-		</link>
-		<link>
 			<name>gecko_sdk_3.2.3/platform/service/device_init/inc/sl_device_init_hfxo.h</name>
 			<type>1</type>
 			<locationURI>STUDIO_SDK_LOC/platform/service/device_init/inc/sl_device_init_hfxo.h</locationURI>
@@ -502,11 +497,6 @@
 			<name>gecko_sdk_3.2.3/platform/service/device_init/src/sl_device_init_emu_s2.c</name>
 			<type>1</type>
 			<locationURI>STUDIO_SDK_LOC/platform/service/device_init/src/sl_device_init_emu_s2.c</locationURI>
-		</link>
-		<link>
-			<name>gecko_sdk_3.2.3/platform/service/device_init/src/sl_device_init_hfrco.c</name>
-			<type>1</type>
-			<locationURI>STUDIO_SDK_LOC/platform/service/device_init/src/sl_device_init_hfrco.c</locationURI>
 		</link>
 		<link>
 			<name>gecko_sdk_3.2.3/platform/service/device_init/src/sl_device_init_hfxo_s2.c</name>

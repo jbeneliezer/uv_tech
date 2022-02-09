@@ -128,7 +128,6 @@
             <file name="sl_device_init_clocks.h" uri="studio:/sdk/platform/service/device_init/inc/sl_device_init_clocks.h"/>
             <file name="sl_device_init_dcdc.h" uri="studio:/sdk/platform/service/device_init/inc/sl_device_init_dcdc.h"/>
             <file name="sl_device_init_emu.h" uri="studio:/sdk/platform/service/device_init/inc/sl_device_init_emu.h"/>
-            <file name="sl_device_init_hfrco.h" uri="studio:/sdk/platform/service/device_init/inc/sl_device_init_hfrco.h"/>
             <file name="sl_device_init_hfxo.h" uri="studio:/sdk/platform/service/device_init/inc/sl_device_init_hfxo.h"/>
             <file name="sl_device_init_lfrco.h" uri="studio:/sdk/platform/service/device_init/inc/sl_device_init_lfrco.h"/>
             <file name="sl_device_init_nvic.h" uri="studio:/sdk/platform/service/device_init/inc/sl_device_init_nvic.h"/>
@@ -136,7 +135,6 @@
           <folder name="src">
             <file name="sl_device_init_dcdc_s2.c" uri="studio:/sdk/platform/service/device_init/src/sl_device_init_dcdc_s2.c"/>
             <file name="sl_device_init_emu_s2.c" uri="studio:/sdk/platform/service/device_init/src/sl_device_init_emu_s2.c"/>
-            <file name="sl_device_init_hfrco.c" uri="studio:/sdk/platform/service/device_init/src/sl_device_init_hfrco.c"/>
             <file name="sl_device_init_hfxo_s2.c" uri="studio:/sdk/platform/service/device_init/src/sl_device_init_hfxo_s2.c"/>
             <file name="sl_device_init_lfrco.c" uri="studio:/sdk/platform/service/device_init/src/sl_device_init_lfrco.c"/>
             <file name="sl_device_init_nvic.c" uri="studio:/sdk/platform/service/device_init/src/sl_device_init_nvic.c"/>

@@ -62,7 +62,7 @@
 // <i> When this configuration is passed into stack initialization, the stack
 // <i> will select the closest value that the device supports.
 // <i> API sl_bt_system_get_tx_power_setting() can be used to query the selected value.
-#define SL_BT_CONFIG_MIN_TX_POWER     (-30)
+#define SL_BT_CONFIG_MIN_TX_POWER     -30
 
 // <o SL_BT_CONFIG_MAX_TX_POWER> Maximum radiated TX power level in 0.1dBm unit
 // <i> Default: 80 (8 dBm)
@@ -71,7 +71,7 @@
 // <i> When this configuration is passed into stack initialization, the stack
 // <i> will select the closest value that the device supports.
 // <i> API sl_bt_system_get_tx_power_setting() can be used to query the selected value.
-#define SL_BT_CONFIG_MAX_TX_POWER     (80)
+#define SL_BT_CONFIG_MAX_TX_POWER     80
 
 // </h> End TX Power Levels
 
@@ -83,7 +83,7 @@
 // <i> output power. Power radiated from the antenna then matches the application request.
 // <i> For example, with radiated TX power set to +10 dBm and RF TX path
 // <i> gain to -1 dBm, the transmitter output power will be set to +11 dBm.
-#define SL_BT_CONFIG_RF_PATH_GAIN_TX     (0)
+#define SL_BT_CONFIG_RF_PATH_GAIN_TX     0
 
 // <o SL_BT_CONFIG_RF_PATH_GAIN_RX> RF RX path gain in 0.1dBm unit
 // <i> Default: 0
