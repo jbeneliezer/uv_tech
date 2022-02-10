@@ -31,7 +31,9 @@
 #ifndef APP_H
 #define APP_H
 #include "em_gpio.h"
-#define MAX_SENSORS 4
+#define MAX_SENSORS 0x04
+#define INT_USER_BUTTON 0x01
+#define INT_TIMER 0x02
 
 typedef struct Sensor{
 	bool active;
@@ -39,6 +41,10 @@ typedef struct Sensor{
 	uint8_t power_pin;
 	uint8_t addr;
 }Sensor;
+
+void letimer_init();
+void notify_uv_data();
+void int_user_button(uint8_t pin_num);
 
 /**************************************************************************//**
  * Application Init.

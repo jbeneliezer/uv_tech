@@ -33,8 +33,11 @@
 #include "gatt_db.h"
 #include "app.h"
 
+#include "em_cmu.h"
 #include "em_gpio.h"
+#include "gpiointerrupt.h"
 #include "em_i2c.h"
+#include "em_letimer.h"
 #include "sl_udelay.h"
 #include "i2c.h"
 #include "si1132.h"
@@ -47,15 +50,21 @@ static Sensor sensors[MAX_SENSORS] = {{false, gpioPortA, 0, DEFAULT_ADDR},
 							   {false, gpioPortA, 5, DEFAULT_ADDR},
 							   {false, gpioPortA, 6, DEFAULT_ADDR}};
 static uint16_t UV_data[MAX_SENSORS] = {0, 0, 0, 0};
-static bool connected = false;
 
 /**************************************************************************//**
  * Application Init.
  *****************************************************************************/
-SL_WEAK void app_init(void)
+void app_init(void)
 {
+	//INITIALIZE GPIO BUTTON INTERRUPT
+	GPIO_IntConfig(gpioPortC, 1, true, true, true);		//falling and rising edge interrupts enabled
+	GPIOINT_CallbackRegister(0x01, int_user_button);
+
 	//INITIALIZE I2C
 	i2c_init();
+
+	//INITIALIZE LETIMER
+	letimer_init();
 
 	//INITIALIZE SENSORS
 	for (uint8_t i = 0; i < MAX_SENSORS; i++) {
@@ -74,21 +83,13 @@ SL_WEAK void app_init(void)
 /**************************************************************************//**
  * Application Process Action.
  *****************************************************************************/
-void app_process_action(void)
+SL_WEAK void app_process_action(void)
 {
-	if (connected) {
-		GPIO_PinOutToggle(gpioPortC, 0);
-		sl_udelay_wait(500000);
-		for (uint8_t i = 0; i < MAX_SENSORS; i++) {
-			if (sensors[i].active) {
-				si1132_UV_start_measurement(I2C0, sensors[i].addr);
-				si1132_UV_read_measurement(I2C0, sensors[i].addr, &UV_data[i]);
-			}
-		}
-		sl_bt_gatt_server_notify_all(gattdb_sensor_data, MAX_SENSORS*sizeof(uint16_t), (uint8_t *)UV_data);
-		GPIO_PinOutToggle(gpioPortC, 0);
-		sl_udelay_wait(500000);
-	}
+	/////////////////////////////////////////////////////////////////////////////
+	// Put your additional application code here!                              //
+	// This is called infinitely.                                              //
+	// Do not call blocking functions from here!                               //
+	/////////////////////////////////////////////////////////////////////////////
 }
 
 /**************************************************************************//**
@@ -128,15 +129,29 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 													 system_id);
 		app_assert_status(sc);
 
+		// Define default connection parameters.
+		sc = sl_bt_connection_set_default_parameters(
+			800,	//min. connection interval: 1000 ms
+			880,	//max. connection interval: 1100 ms
+			1, 		//latency [maximum missed connection events]: 1 event
+			550,	//timeout: 5500 ms
+			0,		//min. connection event length: 0 ms
+			1);		//max. connection event length: 0.675 ms
+		app_assert_status(sc);
+
+		// Set default preferred PHY to 2M PHY.
+		// Note: All PHYs are accepted, just that 2M PHY is preferred
+		sl_bt_connection_set_default_preferred_phy(0x02, 0xFF);
+
 		// Create an advertising set.
 		sc = sl_bt_advertiser_create_set(&advertising_set_handle);
 		app_assert_status(sc);
 
-		// Set advertising interval to 100ms.
+		// Set advertising interval to 1000ms.
 		sc = sl_bt_advertiser_set_timing(
 			advertising_set_handle,
-			160, // min. adv. interval (milliseconds * 1.6)
-			160, // max. adv. interval (milliseconds * 1.6)
+			1600, // min. adv. interval (milliseconds * 1.6)
+			1600, // max. adv. interval (milliseconds * 1.6)
 			0,   // adv. duration
 			0);  // max. num. adv. events
 		app_assert_status(sc);
@@ -152,28 +167,86 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
     // -------------------------------
     // This event indicates that a new connection was opened.
     case sl_bt_evt_connection_opened_id:
-    	connected = true;
+    	// Enable LETIMER
+    	LETIMER_Enable(LETIMER0, true);
     	break;
 
     // -------------------------------
     // This event indicates that a connection was closed.
 	case sl_bt_evt_connection_closed_id:
+		// Disable LETIMER and reset its CNT to 0.
+		LETIMER_Enable(LETIMER0, false);
+		LETIMER_CounterSet(LETIMER0, 0);
 		// Restart advertising after client has disconnected.
 		sc = sl_bt_advertiser_start(
 			advertising_set_handle,
 			sl_bt_advertiser_general_discoverable,
 			sl_bt_advertiser_connectable_scannable);
 		app_assert_status(sc);
-		connected = false;
 		break;
 
     ///////////////////////////////////////////////////////////////////////////
     // Add additional event handlers here as your application requires!      //
     ///////////////////////////////////////////////////////////////////////////
 
+	case sl_bt_evt_system_external_signal_id:
+		// External signal triggered from LETIMER
+		if(evt->data.evt_system_external_signal.extsignals & INT_TIMER) {
+			notify_uv_data();
+		}
+		break;
+
     // -------------------------------
     // Default event handler.
 	default:
 		break;
   }
+}
+
+void letimer_init() {
+	CMU_ClockEnable(cmuClock_LETIMER0, true);
+	CMU_ClockSelectSet(cmuClock_EM23GRPACLK, cmuSelect_LFRCO);
+
+	uint32_t letimer_freq = CMU_ClockFreqGet(cmuClock_LETIMER0);
+
+	LETIMER_Init_TypeDef letimer_init_config = LETIMER_INIT_DEFAULT;
+	letimer_init_config.enable = false;
+	letimer_init_config.topValue = letimer_freq;			//set the top value to the letimer freq. for a 1 second timer
+	letimer_init_config.repMode = letimerRepeatBuffered;	//buffer repeat mode
+
+	LETIMER_Init(LETIMER0, &letimer_init_config);
+	LETIMER_RepeatSet(LETIMER0, 0, 3);
+	LETIMER_RepeatSet(LETIMER0, 1, 3);
+	LETIMER_IntEnable(LETIMER0, LETIMER_IF_UF | LETIMER_IF_REP0);	//interrupt on underflow and when rep0 == 0
+
+	NVIC_EnableIRQ(LETIMER0_IRQn);
+}
+
+void notify_uv_data() {
+	GPIO_PinOutToggle(gpioPortC, 0);
+	for (uint8_t i = 0; i < MAX_SENSORS; i++) {
+		if (sensors[i].active) {
+			si1132_UV_start_measurement(I2C0, sensors[i].addr);
+			si1132_UV_read_measurement(I2C0, sensors[i].addr, &UV_data[i]);
+		}
+	}
+	sl_bt_gatt_server_notify_all(gattdb_sensor_data, MAX_SENSORS*sizeof(uint16_t), (uint8_t *)UV_data);
+	GPIO_PinOutToggle(gpioPortC, 0);
+}
+
+void int_user_button(uint8_t pin_num) {
+	sl_bt_external_signal(INT_USER_BUTTON);
+}
+
+void LETIMER0_IRQHandler() {
+	uint32_t flags = LETIMER_IntGet(LETIMER0);
+	if (flags & LETIMER_IF_REP0) {
+		LETIMER_IntClear(LETIMER0, LETIMER_IF_UF | LETIMER_IF_REP0);
+		sl_bt_external_signal(INT_TIMER);
+		LETIMER_RepeatSet(LETIMER0, 1, 3);
+	}
+	else {
+		LETIMER_IntClear(LETIMER0, LETIMER_IF_UF);
+		sl_bt_external_signal(INT_TIMER);
+	}
 }

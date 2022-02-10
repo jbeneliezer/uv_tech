@@ -34,9 +34,11 @@ component:
 - {id: bluetooth_feature_system}
 - {id: gatt_configuration}
 - {id: bluetooth_feature_scanner}
+- {id: emlib_letimer}
 - {id: bluetooth_stack}
 - {id: component_catalog}
 - {id: ota_dfu}
+- {id: gpiointerrupt}
 - {id: bootloader_interface}
 - {id: app_assert}
 - {id: bluetooth_feature_gatt}

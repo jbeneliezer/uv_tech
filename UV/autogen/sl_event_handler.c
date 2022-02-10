@@ -13,6 +13,7 @@
 #include "sl_bluetooth.h"
 #include "sl_debug_swo.h"
 #include "sl_emlib_gpio_simple_init.h"
+#include "gpiointerrupt.h"
 #include "sl_mbedtls.h"
 #include "sl_mpu.h"
 #include "nvm3_default.h"
@@ -36,6 +37,7 @@ void sl_driver_init(void)
 {
   sl_debug_swo_init();
   sl_emlib_gpio_simple_init();
+  GPIOINT_Init();
 }
 
 void sl_service_init(void)
