@@ -31,20 +31,28 @@
 #ifndef APP_H
 #define APP_H
 #include "em_gpio.h"
+#define GPIO_BUTTON_PORT gpioPortC
+#define GPIO_BUTTON_PIN 1
 #define MAX_SENSORS 0x04
-#define INT_USER_BUTTON 0x01
-#define INT_TIMER 0x02
+#define MAX_BUFFER 0x03			//must be greater than 0
 
-typedef struct Sensor{
+typedef struct Sensor {
 	bool active;
 	GPIO_Port_TypeDef power_port;
 	uint8_t power_pin;
 	uint8_t addr;
 }Sensor;
+typedef enum APP_TIMER {
+	TIMER_SENSOR,
+	TIMER_BUTTON
+}APP_TIMER;
+typedef enum APP_INT {
+	INT_BUTTON
+}APP_INT;
 
-void letimer_init();
-void notify_uv_data();
-void int_user_button(uint8_t pin_num);
+//void letimer_init();
+void sensor_init();
+void measure_uv();
 
 /**************************************************************************//**
  * Application Init.

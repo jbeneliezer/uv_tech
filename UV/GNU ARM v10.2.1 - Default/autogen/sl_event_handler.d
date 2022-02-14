@@ -103,7 +103,6 @@ autogen/sl_event_handler.o: ../autogen/sl_event_handler.c \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bt_api_compatibility.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\driver\debug\inc\sl_debug_swo.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\init\gpio_simple\sl_emlib_gpio_simple_init.h \
- c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emdrv\gpiointerrupt\inc\gpiointerrupt.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\util\third_party\crypto\sl_component\sl_alt\include\sl_mbedtls.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\mpu\inc\sl_mpu.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emdrv\nvm3\inc\nvm3_default.h \
@@ -216,7 +215,6 @@ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bt_api_compatibility.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\driver\debug\inc\sl_debug_swo.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\init\gpio_simple\sl_emlib_gpio_simple_init.h:
-c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emdrv\gpiointerrupt\inc\gpiointerrupt.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\util\third_party\crypto\sl_component\sl_alt\include\sl_mbedtls.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\mpu\inc\sl_mpu.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emdrv\nvm3\inc\nvm3_default.h:

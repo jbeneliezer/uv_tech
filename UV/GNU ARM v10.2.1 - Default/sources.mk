@@ -25,7 +25,6 @@ gecko_sdk_3.2.3/platform/bootloader/api \
 gecko_sdk_3.2.3/platform/common/src \
 gecko_sdk_3.2.3/platform/common/toolchain/src \
 gecko_sdk_3.2.3/platform/driver/debug/src \
-gecko_sdk_3.2.3/platform/emdrv/gpiointerrupt/src \
 gecko_sdk_3.2.3/platform/emdrv/nvm3/src \
 gecko_sdk_3.2.3/platform/emlib/src \
 gecko_sdk_3.2.3/platform/radio/rail_lib/plugin/pa-conversions \

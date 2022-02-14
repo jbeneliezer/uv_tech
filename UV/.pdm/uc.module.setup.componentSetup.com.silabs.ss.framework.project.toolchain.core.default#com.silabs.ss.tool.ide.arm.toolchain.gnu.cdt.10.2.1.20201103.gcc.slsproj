@@ -211,14 +211,6 @@
             <file name="ecode.h" uri="studio:/sdk/platform/emdrv/common/inc/ecode.h"/>
           </folder>
         </folder>
-        <folder name="gpiointerrupt">
-          <folder name="src">
-            <file name="gpiointerrupt.c" uri="studio:/sdk/platform/emdrv/gpiointerrupt/src/gpiointerrupt.c"/>
-          </folder>
-          <folder name="inc">
-            <file name="gpiointerrupt.h" uri="studio:/sdk/platform/emdrv/gpiointerrupt/inc/gpiointerrupt.h"/>
-          </folder>
-        </folder>
         <folder name="nvm3">
           <folder name="src">
             <file name="nvm3_default_common_linker.c" uri="studio:/sdk/platform/emdrv/nvm3/src/nvm3_default_common_linker.c"/>
@@ -246,7 +238,6 @@
           <file name="em_emu.c" uri="studio:/sdk/platform/emlib/src/em_emu.c"/>
           <file name="em_gpio.c" uri="studio:/sdk/platform/emlib/src/em_gpio.c"/>
           <file name="em_i2c.c" uri="studio:/sdk/platform/emlib/src/em_i2c.c"/>
-          <file name="em_letimer.c" uri="studio:/sdk/platform/emlib/src/em_letimer.c"/>
           <file name="em_msc.c" uri="studio:/sdk/platform/emlib/src/em_msc.c"/>
           <file name="em_prs.c" uri="studio:/sdk/platform/emlib/src/em_prs.c"/>
           <file name="em_rtcc.c" uri="studio:/sdk/platform/emlib/src/em_rtcc.c"/>
@@ -267,7 +258,6 @@
           <file name="em_emu.h" uri="studio:/sdk/platform/emlib/inc/em_emu.h"/>
           <file name="em_gpio.h" uri="studio:/sdk/platform/emlib/inc/em_gpio.h"/>
           <file name="em_i2c.h" uri="studio:/sdk/platform/emlib/inc/em_i2c.h"/>
-          <file name="em_letimer.h" uri="studio:/sdk/platform/emlib/inc/em_letimer.h"/>
           <file name="em_msc.h" uri="studio:/sdk/platform/emlib/inc/em_msc.h"/>
           <file name="em_msc_compat.h" uri="studio:/sdk/platform/emlib/inc/em_msc_compat.h"/>
           <file name="em_prs.h" uri="studio:/sdk/platform/emlib/inc/em_prs.h"/>
@@ -707,7 +697,6 @@
   <includePath uri="studio:/sdk/platform/emdrv/common/inc"/>
   <includePath uri="studio:/sdk/platform/emlib/inc"/>
   <includePath uri="studio:/sdk/platform/emlib/init/gpio_simple"/>
-  <includePath uri="studio:/sdk/platform/emdrv/gpiointerrupt/inc"/>
   <includePath uri="studio:/sdk/platform/service/hfxo_manager/inc"/>
   <includePath uri="studio:/sdk/util/third_party/crypto/sl_component/sl_mbedtls_support/config"/>
   <includePath uri="studio:/sdk/util/third_party/crypto/mbedtls/include"/>

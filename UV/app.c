@@ -35,9 +35,7 @@
 
 #include "em_cmu.h"
 #include "em_gpio.h"
-#include "gpiointerrupt.h"
 #include "em_i2c.h"
-#include "em_letimer.h"
 #include "sl_udelay.h"
 #include "i2c.h"
 #include "si1132.h"
@@ -49,7 +47,10 @@ static Sensor sensors[MAX_SENSORS] = {{false, gpioPortA, 0, DEFAULT_ADDR},
 							   {false, gpioPortA, 4, DEFAULT_ADDR},
 							   {false, gpioPortA, 5, DEFAULT_ADDR},
 							   {false, gpioPortA, 6, DEFAULT_ADDR}};
-static uint16_t UV_data[MAX_SENSORS] = {0, 0, 0, 0};
+static uint16_t UV_data[MAX_SENSORS*MAX_BUFFER];
+static uint8_t buffer_index = 0;
+static uint8_t buffer_size = 0;
+static uint32_t timer_freq = 32768;
 
 /**************************************************************************//**
  * Application Init.
@@ -57,27 +58,22 @@ static uint16_t UV_data[MAX_SENSORS] = {0, 0, 0, 0};
 void app_init(void)
 {
 	//INITIALIZE GPIO BUTTON INTERRUPT
-	GPIO_IntConfig(gpioPortC, 1, true, true, true);		//falling and rising edge interrupts enabled
-	GPIOINT_CallbackRegister(0x01, int_user_button);
+	GPIO_ExtIntConfig(GPIO_BUTTON_PORT, 			//falling and rising edge interrupts enabled
+					  GPIO_BUTTON_PIN,
+					  GPIO_BUTTON_PIN,
+					  true,
+					  true,
+					  true);
+	NVIC_EnableIRQ(GPIO_ODD_IRQn);					//enable odd pin interrupts
 
 	//INITIALIZE I2C
 	i2c_init();
 
-	//INITIALIZE LETIMER
-	letimer_init();
+	//STORE RTCC CLOCK FREQUENCY FOR SOFT TIMERS
+	timer_freq = CMU_ClockFreqGet(cmuClock_RTCC);
 
 	//INITIALIZE SENSORS
-	for (uint8_t i = 0; i < MAX_SENSORS; i++) {
-		if (si1132_init(sensors[i].power_port, sensors[i].power_pin, I2C0, DEFAULT_ADDR+i+1)) {
-			sensors[i].addr = DEFAULT_ADDR+i+1;
-			sensors[i].active = true;
-			UV_data[i] = 0;
-		}
-		else {
-			GPIO_PinOutClear(sensors[i].power_port, sensors[i].power_pin);
-			UV_data[i] = 0xFFFF;
-		}
-	}
+	sensor_init();
 }
 
 /**************************************************************************//**
@@ -167,17 +163,21 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
     // -------------------------------
     // This event indicates that a new connection was opened.
     case sl_bt_evt_connection_opened_id:
-    	// Enable LETIMER
-    	LETIMER_Enable(LETIMER0, true);
+//    	// Enable LETIMER
+//    	LETIMER_Enable(LETIMER0, true);
     	break;
 
     // -------------------------------
     // This event indicates that a connection was closed.
 	case sl_bt_evt_connection_closed_id:
-		// Disable LETIMER and reset its CNT to 0.
-		LETIMER_Enable(LETIMER0, false);
-		LETIMER_CounterSet(LETIMER0, 0);
+//		// Disable LETIMER and reset its CNT to 0.
+//		LETIMER_Enable(LETIMER0, false);
+//		LETIMER_CounterSet(LETIMER0, 0);
 		// Restart advertising after client has disconnected.
+		sc = sl_bt_system_set_soft_timer(0, TIMER_SENSOR, 0);
+		app_assert_status(sc);
+		buffer_index = 0;
+		buffer_size = 0;
 		sc = sl_bt_advertiser_start(
 			advertising_set_handle,
 			sl_bt_advertiser_general_discoverable,
@@ -189,10 +189,56 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
     // Add additional event handlers here as your application requires!      //
     ///////////////////////////////////////////////////////////////////////////
 
-	case sl_bt_evt_system_external_signal_id:
-		// External signal triggered from LETIMER
-		if(evt->data.evt_system_external_signal.extsignals & INT_TIMER) {
-			notify_uv_data();
+	case sl_bt_evt_gatt_server_characteristic_status_id:
+		if (evt->data.evt_gatt_server_characteristic_status.status_flags
+			!= gatt_server_client_config) {
+			break;
+		}
+		if (evt->data.evt_gatt_server_characteristic_status.characteristic
+			!= gattdb_sensor_data) {
+			break;
+		}
+		if (evt->data.evt_gatt_server_characteristic_status.client_config_flags
+			== gatt_notification) {
+			sc = sl_bt_system_set_soft_timer(timer_freq, TIMER_SENSOR, 0);
+			app_assert_status(sc);
+		}
+		else if (evt->data.evt_gatt_server_characteristic_status.client_config_flags
+			== gatt_disable) {
+			sc = sl_bt_system_set_soft_timer(0, TIMER_SENSOR, 0);
+			app_assert_status(sc);
+		}
+		break;
+
+	case sl_bt_evt_system_soft_timer_id:
+		if (evt->data.evt_system_soft_timer.handle
+			== TIMER_SENSOR) {
+			CMU_ClockDivSet(cmuClock_HCLK, 8);
+			GPIO_PinOutToggle(gpioPortC, 0);
+
+			measure_uv();
+			if (buffer_size == MAX_BUFFER) {
+				sl_bt_gatt_server_notify_all(
+					gattdb_sensor_data,
+					MAX_SENSORS*MAX_BUFFER*sizeof(uint16_t),
+					(uint8_t *)UV_data);
+				buffer_index = 0;
+				buffer_size = 0;
+			}
+
+			GPIO_PinOutToggle(gpioPortC, 0);
+			CMU_ClockDivSet(cmuClock_HCLK, 1);
+		}
+		else if (evt->data.evt_system_soft_timer.handle
+			== TIMER_BUTTON) {
+
+		}
+		break;
+
+		case sl_bt_evt_system_external_signal_id:
+		// External signal triggered from button
+		if(evt->data.evt_system_external_signal.extsignals & INT_BUTTON) {
+			measure_uv();
 		}
 		break;
 
@@ -203,50 +249,41 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
   }
 }
 
-void letimer_init() {
-	CMU_ClockEnable(cmuClock_LETIMER0, true);
-	CMU_ClockSelectSet(cmuClock_EM23GRPACLK, cmuSelect_LFRCO);
-
-	uint32_t letimer_freq = CMU_ClockFreqGet(cmuClock_LETIMER0);
-
-	LETIMER_Init_TypeDef letimer_init_config = LETIMER_INIT_DEFAULT;
-	letimer_init_config.enable = false;
-	letimer_init_config.topValue = letimer_freq;			//set the top value to the letimer freq. for a 1 second timer
-	letimer_init_config.repMode = letimerRepeatBuffered;	//buffer repeat mode
-
-	LETIMER_Init(LETIMER0, &letimer_init_config);
-	LETIMER_RepeatSet(LETIMER0, 0, 3);
-	LETIMER_RepeatSet(LETIMER0, 1, 3);
-	LETIMER_IntEnable(LETIMER0, LETIMER_IF_UF | LETIMER_IF_REP0);	//interrupt on underflow and when rep0 == 0
-
-	NVIC_EnableIRQ(LETIMER0_IRQn);
+void sensor_init() {
+	for (uint8_t i = 0; i < MAX_SENSORS; i++) {
+		if (si1132_init(sensors[i].power_port, sensors[i].power_pin, I2C0, DEFAULT_ADDR+i+1)) {
+			sensors[i].addr = DEFAULT_ADDR+i+1;
+			sensors[i].active = true;
+			for (uint8_t o = 0; o < MAX_SENSORS*MAX_BUFFER; o += MAX_SENSORS) {
+				UV_data[o+i] = 0x0000;
+			}
+		}
+		else {
+			GPIO_PinOutClear(sensors[i].power_port, sensors[i].power_pin);
+			for (uint8_t o = 0; o < MAX_SENSORS*MAX_BUFFER; o += MAX_SENSORS) {
+				UV_data[o+i] = 0xFFFF;
+			}
+		}
+	}
 }
 
-void notify_uv_data() {
-	GPIO_PinOutToggle(gpioPortC, 0);
+void measure_uv() {
 	for (uint8_t i = 0; i < MAX_SENSORS; i++) {
 		if (sensors[i].active) {
 			si1132_UV_start_measurement(I2C0, sensors[i].addr);
-			si1132_UV_read_measurement(I2C0, sensors[i].addr, &UV_data[i]);
+			si1132_UV_read_measurement(I2C0, sensors[i].addr, &UV_data[buffer_index]);
 		}
+		buffer_index++;
 	}
-	sl_bt_gatt_server_notify_all(gattdb_sensor_data, MAX_SENSORS*sizeof(uint16_t), (uint8_t *)UV_data);
-	GPIO_PinOutToggle(gpioPortC, 0);
+	buffer_size++;
 }
 
-void int_user_button(uint8_t pin_num) {
-	sl_bt_external_signal(INT_USER_BUTTON);
-}
+void GPIO_ODD_IRQHandler(void)
+{
+	uint32_t int_pins = GPIO_IntGet();
+	GPIO_IntClear(int_pins);
 
-void LETIMER0_IRQHandler() {
-	uint32_t flags = LETIMER_IntGet(LETIMER0);
-	if (flags & LETIMER_IF_REP0) {
-		LETIMER_IntClear(LETIMER0, LETIMER_IF_UF | LETIMER_IF_REP0);
-		sl_bt_external_signal(INT_TIMER);
-		LETIMER_RepeatSet(LETIMER0, 1, 3);
-	}
-	else {
-		LETIMER_IntClear(LETIMER0, LETIMER_IF_UF);
-		sl_bt_external_signal(INT_TIMER);
+	if (int_pins & (1 << GPIO_BUTTON_PIN)) {
+		sl_bt_external_signal(INT_BUTTON);
 	}
 }
