@@ -34,9 +34,9 @@
 #include "app.h"
 
 #include "em_cmu.h"
-#include "em_gpio.h"
-#include "em_i2c.h"
-#include "sl_udelay.h"
+#include "int_enum.h"
+#include "gpio.h"
+#include "timer.h"
 #include "i2c.h"
 #include "si1132.h"
 
@@ -44,33 +44,26 @@
 static uint8_t advertising_set_handle = 0xff;
 
 static Sensor sensors[MAX_SENSORS] = {{false, gpioPortA, 0, DEFAULT_ADDR},
-							   {false, gpioPortA, 4, DEFAULT_ADDR},
-							   {false, gpioPortA, 5, DEFAULT_ADDR},
-							   {false, gpioPortA, 6, DEFAULT_ADDR}};
+									  {false, gpioPortA, 4, DEFAULT_ADDR},
+									  {false, gpioPortA, 5, DEFAULT_ADDR},
+									  {false, gpioPortA, 6, DEFAULT_ADDR}};
 static uint16_t UV_data[MAX_SENSORS*MAX_BUFFER];
 static uint8_t buffer_index = 0;
 static uint8_t buffer_size = 0;
-static uint32_t timer_freq = 32768;
 
 /**************************************************************************//**
  * Application Init.
  *****************************************************************************/
 void app_init(void)
 {
-	//INITIALIZE GPIO BUTTON INTERRUPT
-	GPIO_ExtIntConfig(GPIO_BUTTON_PORT, 			//falling and rising edge interrupts enabled
-					  GPIO_BUTTON_PIN,
-					  GPIO_BUTTON_PIN,
-					  true,
-					  true,
-					  true);
-	NVIC_EnableIRQ(GPIO_ODD_IRQn);					//enable odd pin interrupts
+	//INITIALIZE GPIO
+	gpio_init();
 
 	//INITIALIZE I2C
 	i2c_init();
 
-	//STORE RTCC CLOCK FREQUENCY FOR SOFT TIMERS
-	timer_freq = CMU_ClockFreqGet(cmuClock_RTCC);
+	//INITIALIZE TIMER
+	timer_init_();
 
 	//INITIALIZE SENSORS
 	sensor_init();
@@ -163,21 +156,18 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
     // -------------------------------
     // This event indicates that a new connection was opened.
     case sl_bt_evt_connection_opened_id:
-//    	// Enable LETIMER
-//    	LETIMER_Enable(LETIMER0, true);
     	break;
 
     // -------------------------------
     // This event indicates that a connection was closed.
 	case sl_bt_evt_connection_closed_id:
-//		// Disable LETIMER and reset its CNT to 0.
-//		LETIMER_Enable(LETIMER0, false);
-//		LETIMER_CounterSet(LETIMER0, 0);
-		// Restart advertising after client has disconnected.
-		sc = sl_bt_system_set_soft_timer(0, TIMER_SENSOR, 0);
+		// Stop the 1 second timer for UV measurements.
+		// Reset buffer index and size
+		sc = timer_sensor_stop();
 		app_assert_status(sc);
 		buffer_index = 0;
 		buffer_size = 0;
+		// Restart advertising after client has disconnected.
 		sc = sl_bt_advertiser_start(
 			advertising_set_handle,
 			sl_bt_advertiser_general_discoverable,
@@ -189,30 +179,38 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
     // Add additional event handlers here as your application requires!      //
     ///////////////////////////////////////////////////////////////////////////
 
+	//NOTE: This event handler also triggers when an indication acknowledge
+	//is received. We do not need to check for that acknowledge since we
+	//we are using notifications.
 	case sl_bt_evt_gatt_server_characteristic_status_id:
-		if (evt->data.evt_gatt_server_characteristic_status.status_flags
-			!= gatt_server_client_config) {
-			break;
-		}
 		if (evt->data.evt_gatt_server_characteristic_status.characteristic
 			!= gattdb_sensor_data) {
+			// Exit if event was not caused by a change to sensor_data.
 			break;
 		}
+
 		if (evt->data.evt_gatt_server_characteristic_status.client_config_flags
 			== gatt_notification) {
-			sc = sl_bt_system_set_soft_timer(timer_freq, TIMER_SENSOR, 0);
+			// If gatt notifications were enabled
+			// Start a 1 second timer for UV measurements.
+			sc = timer_sensor_start();
 			app_assert_status(sc);
 		}
 		else if (evt->data.evt_gatt_server_characteristic_status.client_config_flags
 			== gatt_disable) {
-			sc = sl_bt_system_set_soft_timer(0, TIMER_SENSOR, 0);
+			// If gatt notifications were disabled
+			// Stop the 1 second timer for UV measurements.
+			// Reset buffer index and size
+			sc = timer_sensor_stop();
 			app_assert_status(sc);
+			buffer_index = 0;
+			buffer_size = 0;
 		}
 		break;
 
-	case sl_bt_evt_system_soft_timer_id:
-		if (evt->data.evt_system_soft_timer.handle
-			== TIMER_SENSOR) {
+		case sl_bt_evt_system_external_signal_id:
+		// External signal triggered from sensor timer.
+		if (evt->data.evt_system_external_signal.extsignals & INT_TIMER_SENSOR) {
 			CMU_ClockDivSet(cmuClock_HCLK, 8);
 			GPIO_PinOutToggle(gpioPortC, 0);
 
@@ -229,16 +227,8 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 			GPIO_PinOutToggle(gpioPortC, 0);
 			CMU_ClockDivSet(cmuClock_HCLK, 1);
 		}
-		else if (evt->data.evt_system_soft_timer.handle
-			== TIMER_BUTTON) {
+		else if (evt->data.evt_system_external_signal.extsignals & INT_BUTTON) {
 
-		}
-		break;
-
-		case sl_bt_evt_system_external_signal_id:
-		// External signal triggered from button
-		if(evt->data.evt_system_external_signal.extsignals & INT_BUTTON) {
-			measure_uv();
 		}
 		break;
 
@@ -276,14 +266,4 @@ void measure_uv() {
 		buffer_index++;
 	}
 	buffer_size++;
-}
-
-void GPIO_ODD_IRQHandler(void)
-{
-	uint32_t int_pins = GPIO_IntGet();
-	GPIO_IntClear(int_pins);
-
-	if (int_pins & (1 << GPIO_BUTTON_PIN)) {
-		sl_bt_external_signal(INT_BUTTON);
-	}
 }

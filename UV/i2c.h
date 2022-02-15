@@ -8,6 +8,8 @@
 #ifndef I2C_H_
 #define I2C_H_
 
+#include "em_i2c.h"
+
 /***************************************************************************//**
  * @brief
  *   Initializes I2C0 for fast mode.
