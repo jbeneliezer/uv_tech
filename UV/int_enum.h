@@ -10,7 +10,8 @@
 
 typedef enum APP_INT {
 	INT_TIMER_SENSOR = 1,
-	INT_BUTTON
+	INT_BUTTON_PRESS,
+	INT_BUTTON_HOLD
 }APP_INT;
 
 #endif /* INT_ENUM_H_ */

@@ -30,7 +30,9 @@
 
 #ifndef APP_H
 #define APP_H
+
 #include "em_common.h"
+
 #define MAX_SENSORS 0x04
 #define MAX_BUFFER 0x03			//must be greater than 0
 

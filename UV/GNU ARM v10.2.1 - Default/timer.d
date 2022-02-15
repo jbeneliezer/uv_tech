@@ -86,7 +86,9 @@ timer.o: ../timer.c \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bt_api.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bgapi.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bt_api_compatibility.h \
- ../int_enum.h ../timer.h
+ ../int_enum.h ../gpio.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_gpio.h \
+ ../timer.h
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\common\toolchain\inc\sl_gcc_preinclude.h:
 C\:\Users\creat\SimplicityStudio\v5_workspace\UV\autogen/sl_bluetooth.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\power_manager\inc\sl_power_manager.h:
@@ -175,4 +177,6 @@ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bgapi.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bt_api_compatibility.h:
 ../int_enum.h:
+../gpio.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_gpio.h:
 ../timer.h:

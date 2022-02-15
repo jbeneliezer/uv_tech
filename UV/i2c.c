@@ -19,8 +19,6 @@ void i2c_init(void) {
 	//i2cInit.freq = I2C_FREQ_FAST_MAX;
 	//i2cInit.clhr = i2cClockHLRAsymetric;
 
-	//volatile uint32_t div = CMU_ClockFreqGet(cmuClock_I2C0);
-
 	//Both I2C pins configured for open-drain pull up operation
 	GPIO_PinModeSet(gpioPortB, 0, gpioModeWiredAndPullUpFilter, 1);		//PB0 = SDA
 	GPIO_PinModeSet(gpioPortB, 1, gpioModeWiredAndPullUpFilter, 1);		//PB1 = SCLK

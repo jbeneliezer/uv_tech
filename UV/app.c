@@ -156,17 +156,17 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
     // -------------------------------
     // This event indicates that a new connection was opened.
     case sl_bt_evt_connection_opened_id:
+		// Reset buffer index and size;
+		buffer_index = 0;
+		buffer_size = 0;
     	break;
 
     // -------------------------------
     // This event indicates that a connection was closed.
 	case sl_bt_evt_connection_closed_id:
 		// Stop the 1 second timer for UV measurements.
-		// Reset buffer index and size
 		sc = timer_sensor_stop();
 		app_assert_status(sc);
-		buffer_index = 0;
-		buffer_size = 0;
 		// Restart advertising after client has disconnected.
 		sc = sl_bt_advertiser_start(
 			advertising_set_handle,
@@ -191,24 +191,24 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 
 		if (evt->data.evt_gatt_server_characteristic_status.client_config_flags
 			== gatt_notification) {
-			// If gatt notifications were enabled
+			// If gatt notifications were enabled,
+			// Reset buffer index and size,
 			// Start a 1 second timer for UV measurements.
+			buffer_index = 0;
+			buffer_size = 0;
 			sc = timer_sensor_start();
 			app_assert_status(sc);
 		}
 		else if (evt->data.evt_gatt_server_characteristic_status.client_config_flags
 			== gatt_disable) {
-			// If gatt notifications were disabled
+			// If gatt notifications were disabled,
 			// Stop the 1 second timer for UV measurements.
-			// Reset buffer index and size
 			sc = timer_sensor_stop();
 			app_assert_status(sc);
-			buffer_index = 0;
-			buffer_size = 0;
 		}
 		break;
 
-		case sl_bt_evt_system_external_signal_id:
+	case sl_bt_evt_system_external_signal_id:
 		// External signal triggered from sensor timer.
 		if (evt->data.evt_system_external_signal.extsignals & INT_TIMER_SENSOR) {
 			CMU_ClockDivSet(cmuClock_HCLK, 8);
@@ -227,7 +227,10 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 			GPIO_PinOutToggle(gpioPortC, 0);
 			CMU_ClockDivSet(cmuClock_HCLK, 1);
 		}
-		else if (evt->data.evt_system_external_signal.extsignals & INT_BUTTON) {
+		else if (evt->data.evt_system_external_signal.extsignals & INT_BUTTON_PRESS) {
+
+		}
+		else if (evt->data.evt_system_external_signal.extsignals & INT_BUTTON_HOLD) {
 
 		}
 		break;

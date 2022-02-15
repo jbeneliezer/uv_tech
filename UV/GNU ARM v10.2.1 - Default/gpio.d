@@ -1,6 +1,8 @@
 gpio.o: ../gpio.c \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\common\toolchain\inc\sl_gcc_preinclude.h \
- c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_gpio.h \
+ C\:\Users\creat\SimplicityStudio\v5_workspace\UV\autogen/sl_bluetooth.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\power_manager\inc\sl_power_manager.h \
+ C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/sl_power_manager_config.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\device\siliconlabs\efr32bg22\include\em_device.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\device\siliconlabs\efr32bg22\include\efr32bg22c224f512gm32.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\cmsis\include\core_cm33.h \
@@ -57,15 +59,39 @@ gpio.o: ../gpio.c \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\device\siliconlabs\efr32bg22\include\efr32bg22_prs_signals.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\device\siliconlabs\efr32bg22\include\efr32bg22_dma_descriptor.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\device\siliconlabs\efr32bg22\include\efr32bg22_ldmaxbar_defines.h \
- c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_bus.h \
- c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_assert.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_core.h \
  c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_common.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_assert.h \
  C\:\Users\creat\SimplicityStudio\v5_workspace\UV\autogen/sl_component_catalog.h \
  C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/emlib_core_debug_config.h \
- ../int_enum.h ../gpio.h
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\common\inc\sl_slist.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_assert.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\common\inc\sl_status.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\sleeptimer\inc\sl_sleeptimer.h \
+ C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/sl_sleeptimer_config.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\common\inc\sl_enum.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_emu.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_bus.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_core.h \
+ C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/sl_bluetooth_config.h \
+ C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/sl_bluetooth_connection_config.h \
+ C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/sl_bluetooth_advertiser_config.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bt_stack_config.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bt_ll_config.h \
+ C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/sl_rail_util_pa_config.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\common\rail_types.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\chip\efr32\efr32xg2x\rail_chip_specific.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\common\rail_features.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\common\rail_types.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bt_api.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bgapi.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bt_api_compatibility.h \
+ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_gpio.h \
+ ../int_enum.h ../timer.h ../gpio.h
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\common\toolchain\inc\sl_gcc_preinclude.h:
-c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_gpio.h:
+C\:\Users\creat\SimplicityStudio\v5_workspace\UV\autogen/sl_bluetooth.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\power_manager\inc\sl_power_manager.h:
+C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/sl_power_manager_config.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\device\siliconlabs\efr32bg22\include\em_device.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\device\siliconlabs\efr32bg22\include\efr32bg22c224f512gm32.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\cmsis\include\core_cm33.h:
@@ -122,11 +148,34 @@ c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\device\siliconlabs\efr32bg22\include\efr32bg22_prs_signals.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\device\siliconlabs\efr32bg22\include\efr32bg22_dma_descriptor.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\device\siliconlabs\efr32bg22\include\efr32bg22_ldmaxbar_defines.h:
-c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_bus.h:
-c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_assert.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_core.h:
 c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_common.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_assert.h:
 C\:\Users\creat\SimplicityStudio\v5_workspace\UV\autogen/sl_component_catalog.h:
 C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/emlib_core_debug_config.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\common\inc\sl_slist.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_assert.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\common\inc\sl_status.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\service\sleeptimer\inc\sl_sleeptimer.h:
+C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/sl_sleeptimer_config.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\common\inc\sl_enum.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_emu.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_bus.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_core.h:
+C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/sl_bluetooth_config.h:
+C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/sl_bluetooth_connection_config.h:
+C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/sl_bluetooth_advertiser_config.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bt_stack_config.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bt_ll_config.h:
+C\:\Users\creat\SimplicityStudio\v5_workspace\UV\config/sl_rail_util_pa_config.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\common\rail_types.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\chip\efr32\efr32xg2x\rail_chip_specific.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\common\rail_features.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\common\rail_types.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bt_api.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bgapi.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\protocol\bluetooth\inc\sl_bt_api_compatibility.h:
+c\:\siliconlabs\simplicitystudio\v5\developer\sdks\gecko_sdk_suite\v3.2\platform\emlib\inc\em_gpio.h:
 ../int_enum.h:
+../timer.h:
 ../gpio.h:
