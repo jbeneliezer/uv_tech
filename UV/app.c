@@ -50,6 +50,7 @@ static Sensor sensors[MAX_SENSORS] = {{false, gpioPortA, 0, DEFAULT_ADDR},
 static uint16_t UV_data[MAX_SENSORS*MAX_BUFFER];
 static uint8_t buffer_index = 0;
 static uint8_t buffer_size = 0;
+static bool notify_en = false;
 
 /**************************************************************************//**
  * Application Init.
@@ -136,13 +137,13 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 		sc = sl_bt_advertiser_create_set(&advertising_set_handle);
 		app_assert_status(sc);
 
-		// Set advertising interval to 1000ms.
+		// Define advertising set timings.
 		sc = sl_bt_advertiser_set_timing(
 			advertising_set_handle,
-			1600, // min. adv. interval (milliseconds * 1.6)
-			1600, // max. adv. interval (milliseconds * 1.6)
-			0,   // adv. duration
-			0);  // max. num. adv. events
+			1600,	// min. adv. interval (milliseconds * 1.6): 1000 ms
+			1600,	// max. adv. interval (milliseconds * 1.6): 1000 ms
+			0,		// adv. duration: 0 ms = no time limit
+			30);	// max. num. adv. events: 30 events (60 seconds of advertising)
 		app_assert_status(sc);
 
 		// Start general advertising and enable connections.
@@ -151,6 +152,8 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 			sl_bt_advertiser_general_discoverable,
 			sl_bt_advertiser_connectable_scannable);
 		app_assert_status(sc);
+		// Start advertising LED.
+		timer_led_advertise_start();
 		break;
 
     // -------------------------------
@@ -159,25 +162,37 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 		// Reset buffer index and size;
 		buffer_index = 0;
 		buffer_size = 0;
+		// Stop advertising LED.
+		timer_led_advertise_stop();
     	break;
 
     // -------------------------------
     // This event indicates that a connection was closed.
 	case sl_bt_evt_connection_closed_id:
 		// Stop the 1 second timer for UV measurements.
-		sc = timer_sensor_stop();
-		app_assert_status(sc);
+		if (notify_en) {
+			sc = timer_sensor_stop();
+			app_assert_status(sc);
+			notify_en = false;
+		}
 		// Restart advertising after client has disconnected.
 		sc = sl_bt_advertiser_start(
 			advertising_set_handle,
 			sl_bt_advertiser_general_discoverable,
 			sl_bt_advertiser_connectable_scannable);
 		app_assert_status(sc);
+		// Start advertising LED.
+		timer_led_advertise_start();
 		break;
 
     ///////////////////////////////////////////////////////////////////////////
     // Add additional event handlers here as your application requires!      //
     ///////////////////////////////////////////////////////////////////////////
+
+	case sl_bt_evt_advertiser_timeout_id:
+		// Stop advertising LED.
+		timer_led_advertise_stop();
+		break;
 
 	//NOTE: This event handler also triggers when an indication acknowledge
 	//is received. We do not need to check for that acknowledge since we
@@ -194,6 +209,7 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 			// If gatt notifications were enabled,
 			// Reset buffer index and size,
 			// Start a 1 second timer for UV measurements.
+			notify_en = true;
 			buffer_index = 0;
 			buffer_size = 0;
 			sc = timer_sensor_start();
@@ -203,6 +219,7 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 			== gatt_disable) {
 			// If gatt notifications were disabled,
 			// Stop the 1 second timer for UV measurements.
+			notify_en = false;
 			sc = timer_sensor_stop();
 			app_assert_status(sc);
 		}
@@ -212,7 +229,7 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 		// External signal triggered from sensor timer.
 		if (evt->data.evt_system_external_signal.extsignals & INT_TIMER_SENSOR) {
 			CMU_ClockDivSet(cmuClock_HCLK, 8);
-			GPIO_PinOutToggle(gpioPortC, 0);
+			gpio_led_on();
 
 			measure_uv();
 			if (buffer_size == MAX_BUFFER) {
@@ -224,7 +241,7 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 				buffer_size = 0;
 			}
 
-			GPIO_PinOutToggle(gpioPortC, 0);
+			gpio_led_off();
 			CMU_ClockDivSet(cmuClock_HCLK, 1);
 		}
 		else if (evt->data.evt_system_external_signal.extsignals & INT_BUTTON_PRESS) {
@@ -232,6 +249,12 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 		}
 		else if (evt->data.evt_system_external_signal.extsignals & INT_BUTTON_HOLD) {
 
+		}
+		else if (evt->data.evt_system_external_signal.extsignals & INT_LED_OFF) {
+			gpio_led_off();
+		}
+		else if (evt->data.evt_system_external_signal.extsignals & INT_LED_ON) {
+			gpio_led_on();
 		}
 		break;
 

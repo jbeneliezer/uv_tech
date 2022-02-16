@@ -25,6 +25,14 @@ void gpio_init() {
 	NVIC_EnableIRQ(GPIO_ODD_IRQn);					//enable odd pin interrupts
 }
 
+inline void gpio_led_off() {
+	GPIO_PinOutClear(GPIO_LED_PORT, GPIO_LED_PIN);
+}
+
+inline void gpio_led_on() {
+	GPIO_PinOutSet(GPIO_LED_PORT, GPIO_LED_PIN);
+}
+
 //NOTE: This IRQ routine assumes that the button state had switched.
 //If button was pressed, then in order to enter this IRQ, the button had to have been released.
 //If button was released, then in order to enter this IRQ, the button had to have been pressed.

@@ -14,6 +14,7 @@
 static uint32_t timer_freq = 32768;
 static sl_sleeptimer_timer_handle_t TIMER_SENSOR;
 static sl_sleeptimer_timer_handle_t TIMER_BUTTON;
+static sl_sleeptimer_timer_handle_t TIMER_LED;
 static uint8_t* button_state;
 
 void timer_init_() {
@@ -48,6 +49,21 @@ sl_status_t timer_button_hold_stop() {
 	return sl_sleeptimer_stop_timer(&TIMER_BUTTON);
 }
 
+sl_status_t timer_led_advertise_start() {
+	sl_bt_external_signal(INT_LED_ON);
+	return sl_sleeptimer_start_timer(&TIMER_LED,
+									 timer_freq >> 4,					//(1/16) second timer period
+									 timer_led_on_callback,
+									 NULL,
+									 TIMER_LED_PRIORITY,
+									 SL_SLEEPTIMER_NO_HIGH_PRECISION_HF_CLOCKS_REQUIRED_FLAG);
+}
+
+sl_status_t timer_led_advertise_stop() {
+	sl_bt_external_signal(INT_LED_OFF);
+	return sl_sleeptimer_stop_timer(&TIMER_LED);
+}
+
 void timer_sensor_callback(sl_sleeptimer_timer_handle_t *handle, void *data) {
 	(void)handle;
 	(void)data;
@@ -62,11 +78,11 @@ void timer_button_debounce_callback(sl_sleeptimer_timer_handle_t *handle, void *
 	if (*button_state == PRESSED) {								//if the button is still being pressed
 		*button_state = DEBOUNCED;									//update button state to DEBOUNCED
 		sl_sleeptimer_start_timer(&TIMER_BUTTON,					//start timer to detect for button hold
-											 timer_freq << 2,		//4 second timer period
-											 timer_button_hold_callback,
-											 NULL,
-											 TIMER_BUTTON_PRIORITY,
-											 SL_SLEEPTIMER_NO_HIGH_PRECISION_HF_CLOCKS_REQUIRED_FLAG);
+								  timer_freq << 2,					//4 second timer period
+								  timer_button_hold_callback,
+								  NULL,
+								  TIMER_BUTTON_PRIORITY,
+								  SL_SLEEPTIMER_NO_HIGH_PRECISION_HF_CLOCKS_REQUIRED_FLAG);
 	}
 	uint32_t int_pins = GPIO_IntGet();							//clear all interrupt flags
 	GPIO_IntClear(int_pins);
@@ -82,4 +98,29 @@ void timer_button_hold_callback(sl_sleeptimer_timer_handle_t *handle, void *data
 		*button_state = HELD;									//update the button state to HELD
 		sl_bt_external_signal(INT_BUTTON_HOLD);					//signal button hold
 	}
+}
+
+void timer_led_on_callback(sl_sleeptimer_timer_handle_t *handle, void *data) {
+	(void)handle;
+	(void)data;
+	sl_bt_external_signal(INT_LED_OFF);
+	sl_sleeptimer_start_timer(&TIMER_LED,
+							  (timer_freq >> 4) +						//(1/16 +
+							  (timer_freq >> 3),						//(1/8) second timer period
+							  timer_led_off_callback,
+							  NULL,
+							  TIMER_LED_PRIORITY,
+							  SL_SLEEPTIMER_NO_HIGH_PRECISION_HF_CLOCKS_REQUIRED_FLAG);
+}
+
+void timer_led_off_callback(sl_sleeptimer_timer_handle_t *handle, void *data) {
+	(void)handle;
+	(void)data;
+	sl_bt_external_signal(INT_LED_ON);
+	sl_sleeptimer_start_timer(&TIMER_LED,
+							  timer_freq >> 4,							//(1/16) second timer period
+							  timer_led_on_callback,
+							  NULL,
+							  TIMER_LED_PRIORITY,
+							  SL_SLEEPTIMER_NO_HIGH_PRECISION_HF_CLOCKS_REQUIRED_FLAG);
 }

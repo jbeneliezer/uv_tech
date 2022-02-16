@@ -12,6 +12,8 @@
 
 #define GPIO_BUTTON_PORT gpioPortC
 #define GPIO_BUTTON_PIN 1
+#define GPIO_LED_PORT gpioPortC
+#define GPIO_LED_PIN 0
 
 typedef enum BUTTON_STATE {
 	PRESSED = 0,
@@ -21,5 +23,7 @@ typedef enum BUTTON_STATE {
 }BUTTON_STATE;
 
 void gpio_init();
+void gpio_led_off();
+void gpio_led_on();
 
 #endif /* GPIO_H_ */
