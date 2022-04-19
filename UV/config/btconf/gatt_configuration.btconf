@@ -64,7 +64,7 @@
     
     <!--Sensor Data-->
     <characteristic const="false" id="sensor_data" name="Sensor Data" sourceId="" uuid="7f47dcfb-b44b-4703-9298-4e0e981bfcab">
-      <informativeText>Abstract: The value length represents the (# of sensors * 2 * buffer size). Each sensor provides a 16-bit value representing 100 times the sunlight UV Index. The mobile device should divide this value by 100 to get the UV index from one sensor. A value of 0xFFFF means that sensor data is not available. The sensors are ordered from first to last. The sensor data is ordered from LSB to MSB. Example for 4 byte value length: [Sensor 0 LSB : Sensor 0 LSB : Sensor 1 MSB : Sensor 1 LSB]. The entire data buffer set is ordered from latest to most recent data.</informativeText>
+      <informativeText>Abstract: The value length represents the (# of sensors * 2 * buffer size). Each sensor provides a 16-bit value representing 100 times the sunlight UV Index. The mobile device should divide this value by 100 to get the UV index from one sensor. A value of 0xFFFF means that sensor data is not available. The sensors are ordered from first to last. The sensor data is ordered from LSB to MSB. Example for 4 byte value length: [Sensor 0 LSB : Sensor 0 MSB : Sensor 1 LSB : Sensor 1 MSB]. The entire data buffer set is ordered from latest to most recent data.</informativeText>
       <value length="24" type="hex" variable_length="false">00</value>
       <properties>
         <notify authenticated="false" bonded="false" encrypted="false"/>
