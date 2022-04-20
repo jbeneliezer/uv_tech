@@ -42,6 +42,7 @@
 
 //The advertising set handle allocated from Bluetooth stack.
 static uint8_t advertising_set_handle = 0xff;
+static uint8_t connection_id = 0xFF;
 
 static Sensor sensors[MAX_SENSORS] = {{false, gpioPortA, 0, DEFAULT_ADDR},
 									  {false, gpioPortA, 4, DEFAULT_ADDR},
@@ -51,6 +52,7 @@ static uint16_t UV_data[MAX_SENSORS*MAX_BUFFER];
 static uint8_t buffer_index = 0;
 static uint8_t buffer_size = 0;
 static bool notify_en = false;
+static DEVICE_STATE state = OFF;
 
 /**************************************************************************//**
  * Application Init.
@@ -145,20 +147,15 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 			0,		// adv. duration: 0 ms = no time limit
 			30);	// max. num. adv. events: 30 events (60 seconds of advertising)
 		app_assert_status(sc);
-
-		// Start general advertising and enable connections.
-		sc = sl_bt_advertiser_start(
-			advertising_set_handle,
-			sl_bt_advertiser_general_discoverable,
-			sl_bt_advertiser_connectable_scannable);
-		app_assert_status(sc);
-		// Start advertising LED.
-		timer_led_advertise_start();
 		break;
 
     // -------------------------------
     // This event indicates that a new connection was opened.
     case sl_bt_evt_connection_opened_id:
+    	// Update state to CONNECTED
+    	state = CONNECTED;
+    	// Store connection id
+    	connection_id = evt->data.evt_connection_opened.connection;
 		// Reset buffer index and size;
 		buffer_index = 0;
 		buffer_size = 0;
@@ -169,6 +166,8 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
     // -------------------------------
     // This event indicates that a connection was closed.
 	case sl_bt_evt_connection_closed_id:
+		// Update state to ADVERTISING
+		state = ADVERTISING;
 		// Stop the 1 second timer for UV measurements.
 		if (notify_en) {
 			sc = timer_sensor_stop();
@@ -190,6 +189,8 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
     ///////////////////////////////////////////////////////////////////////////
 
 	case sl_bt_evt_advertiser_timeout_id:
+		// Update state to OFF
+		state = OFF;
 		// Stop advertising LED.
 		timer_led_advertise_stop();
 		break;
@@ -227,7 +228,7 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 
 	case sl_bt_evt_system_external_signal_id:
 		// External signal triggered from sensor timer.
-		if (evt->data.evt_system_external_signal.extsignals & INT_TIMER_SENSOR) {
+		if (evt->data.evt_system_external_signal.extsignals == INT_TIMER_SENSOR) {
 			CMU_ClockDivSet(cmuClock_HCLK, 8);
 			gpio_led_on();
 
@@ -244,16 +245,42 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 			gpio_led_off();
 			CMU_ClockDivSet(cmuClock_HCLK, 1);
 		}
-		else if (evt->data.evt_system_external_signal.extsignals & INT_BUTTON_PRESS) {
-
+		else if (evt->data.evt_system_external_signal.extsignals == INT_BUTTON_PRESS) {
+			if (state == OFF) {
+				gpio_led_on();
+				sensor_init();
+				gpio_led_off();
+			}
 		}
-		else if (evt->data.evt_system_external_signal.extsignals & INT_BUTTON_HOLD) {
+		else if (evt->data.evt_system_external_signal.extsignals == INT_BUTTON_HOLD) {
+			if (state == OFF) {
+				// Start advertising after button hold
+				state = ADVERTISING;
 
+				// Start general advertising and enable connections.
+				sc = sl_bt_advertiser_start(
+					advertising_set_handle,
+					sl_bt_advertiser_general_discoverable,
+					sl_bt_advertiser_connectable_scannable);
+				app_assert_status(sc);
+
+				// Start advertising LED.
+				timer_led_advertise_start();
+			}
+			else if (state == CONNECTED) {
+				// Disconnect from bluetooth device and start advertising
+				sc = sl_bt_connection_close(connection_id);
+				app_assert_status(sc);
+				state = ADVERTISING;
+			}
+			else {
+				__NOP();
+			}
 		}
-		else if (evt->data.evt_system_external_signal.extsignals & INT_LED_OFF) {
+		else if (evt->data.evt_system_external_signal.extsignals == INT_LED_OFF) {
 			gpio_led_off();
 		}
-		else if (evt->data.evt_system_external_signal.extsignals & INT_LED_ON) {
+		else if (evt->data.evt_system_external_signal.extsignals == INT_LED_ON) {
 			gpio_led_on();
 		}
 		break;
@@ -276,6 +303,7 @@ void sensor_init() {
 		}
 		else {
 			GPIO_PinOutClear(sensors[i].power_port, sensors[i].power_pin);
+			sensors[i].active = false;
 			for (uint8_t o = 0; o < MAX_SENSORS*MAX_BUFFER; o += MAX_SENSORS) {
 				UV_data[o+i] = 0xFFFF;
 			}

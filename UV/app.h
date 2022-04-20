@@ -43,6 +43,10 @@ typedef struct Sensor {
 	uint8_t addr;
 }Sensor;
 
+typedef enum DEVICE_STATE {
+	OFF, ADVERTISING, CONNECTED
+}DEVICE_STATE;
+
 void sensor_init();
 void measure_uv();
 

@@ -78,7 +78,7 @@ void timer_button_debounce_callback(sl_sleeptimer_timer_handle_t *handle, void *
 	if (*button_state == PRESSED) {								//if the button is still being pressed
 		*button_state = DEBOUNCED;									//update button state to DEBOUNCED
 		sl_sleeptimer_start_timer(&TIMER_BUTTON,					//start timer to detect for button hold
-								  timer_freq << 2,					//4 second timer period
+								  timer_freq << 1,					//2 second timer period
 								  timer_button_hold_callback,
 								  NULL,
 								  TIMER_BUTTON_PRIORITY,
