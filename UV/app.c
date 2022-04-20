@@ -246,7 +246,11 @@ void sl_bt_on_event(sl_bt_msg_t *evt)
 			CMU_ClockDivSet(cmuClock_HCLK, 1);
 		}
 		else if (evt->data.evt_system_external_signal.extsignals == INT_BUTTON_PRESS) {
-
+			if (state == OFF) {
+				gpio_led_on();
+				sensor_init();
+				gpio_led_off();
+			}
 		}
 		else if (evt->data.evt_system_external_signal.extsignals == INT_BUTTON_HOLD) {
 			if (state == OFF) {
@@ -299,6 +303,7 @@ void sensor_init() {
 		}
 		else {
 			GPIO_PinOutClear(sensors[i].power_port, sensors[i].power_pin);
+			sensors[i].active = false;
 			for (uint8_t o = 0; o < MAX_SENSORS*MAX_BUFFER; o += MAX_SENSORS) {
 				UV_data[o+i] = 0xFFFF;
 			}

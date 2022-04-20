@@ -30,6 +30,10 @@ struct cal_ref_t calref =
 
 bool si1132_init(GPIO_Port_TypeDef power_port, uint8_t power_pin, I2C_TypeDef *i2c, uint8_t slave_addr)
 {
+	GPIO_PinOutSet(power_port, power_pin);		//power off i2c
+
+	sl_udelay_wait(STARTUP_TIME);
+
 	GPIO_PinOutSet(power_port, power_pin);		//power on i2c
 
 	sl_udelay_wait(STARTUP_TIME);				//allow time for startup
