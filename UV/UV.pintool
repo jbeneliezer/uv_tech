@@ -21,12 +21,13 @@
     <property object="PA06" propertyId="pin.reserve" value="Reserved"/>
     <property object="PB00" propertyId="pin.name" value="I2C_SDA"/>
     <property object="PB01" propertyId="pin.name" value="I2C_SCL"/>
+    <property object="PB02" propertyId="ABModule.selectedRequirement" value="gpio%T%SL_EMLIB_GPIO_INIT_BUTTON%T%sl_emlib_gpio_init_BUTTON_config.h"/>
+    <property object="PB02" propertyId="pin.name" value="USER_BUTTON"/>
+    <property object="PB02" propertyId="pin.reserve" value="Reserved"/>
     <property object="PC00" propertyId="ABModule.selectedRequirement" value="gpio%T%SL_EMLIB_GPIO_INIT_LED%T%sl_emlib_gpio_init_LED_config.h"/>
     <property object="PC00" propertyId="pin.name" value="USER_LED"/>
     <property object="PC00" propertyId="pin.reserve" value="Reserved"/>
-    <property object="PC01" propertyId="ABModule.selectedRequirement" value="gpio%T%SL_EMLIB_GPIO_INIT_BUTTON%T%sl_emlib_gpio_init_BUTTON_config.h"/>
-    <property object="PC01" propertyId="pin.name" value="USER_BUTTON"/>
-    <property object="PC01" propertyId="pin.reserve" value="Reserved"/>
+    <property object="PC01" propertyId="pin.name" value=""/>
     <property object="PD00" propertyId="ABModule.selectedRequirement" value="gpio%T%SL_EMLIB_GPIO_INIT_BATTERY_MONITOR%T%sl_emlib_gpio_init_BATTERY_MONITOR_config.h"/>
     <property object="PD00" propertyId="pin.name" value="BATTERY_MONITOR"/>
     <property object="PD00" propertyId="pin.reserve" value="Reserved"/>

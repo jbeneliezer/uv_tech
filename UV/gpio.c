@@ -22,7 +22,7 @@ void gpio_init() {
 					  true,
 					  true,
 					  true);
-	NVIC_EnableIRQ(GPIO_ODD_IRQn);					//enable odd pin interrupts
+	NVIC_EnableIRQ(GPIO_EVEN_IRQn);					//enable even pin interrupts
 }
 
 inline void gpio_led_off() {
@@ -37,7 +37,7 @@ inline void gpio_led_on() {
 //If button was pressed, then in order to enter this IRQ, the button had to have been released.
 //If button was released, then in order to enter this IRQ, the button had to have been pressed.
 //The implemented debounce state logic will account for bounces.
-void GPIO_ODD_IRQHandler(void)
+void GPIO_EVEN_IRQHandler(void)
 {
 	uint32_t int_pins = GPIO_IntGet();				//clear all pin interrupt flags
 	GPIO_IntClear(int_pins);
