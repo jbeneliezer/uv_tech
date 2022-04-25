@@ -41,8 +41,8 @@
 
 // <gpio> SL_EMLIB_GPIO_INIT_BUTTON
 // $[GPIO_SL_EMLIB_GPIO_INIT_BUTTON]
-#define SL_EMLIB_GPIO_INIT_BUTTON_PORT           gpioPortC
-#define SL_EMLIB_GPIO_INIT_BUTTON_PIN            1
+#define SL_EMLIB_GPIO_INIT_BUTTON_PORT           gpioPortB
+#define SL_EMLIB_GPIO_INIT_BUTTON_PIN            2
 // [GPIO_SL_EMLIB_GPIO_INIT_BUTTON]$
 
 // <<< sl:end pin_tool >>>

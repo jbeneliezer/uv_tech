@@ -10,8 +10,8 @@
 
 #include "em_gpio.h"
 
-#define GPIO_BUTTON_PORT gpioPortC
-#define GPIO_BUTTON_PIN 1
+#define GPIO_BUTTON_PORT gpioPortB
+#define GPIO_BUTTON_PIN 2
 #define GPIO_LED_PORT gpioPortC
 #define GPIO_LED_PIN 0
 
