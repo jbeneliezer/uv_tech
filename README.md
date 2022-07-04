@@ -1,2 +1,2 @@
 Senior Design:
-Basically a wearable uv detector with bluetooth and mobile app.
+Wearable uv detector with bluetooth and mobile app.
